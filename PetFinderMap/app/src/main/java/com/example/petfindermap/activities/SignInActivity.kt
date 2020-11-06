@@ -29,7 +29,6 @@ class SignInActivity : AppCompatActivity() {
             } catch (ex: java.lang.Exception) {
                 TextView.text = "Ошибка авторизации"
             }
-
             finish()
         }
     }

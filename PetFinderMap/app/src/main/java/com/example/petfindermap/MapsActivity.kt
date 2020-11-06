@@ -8,7 +8,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.view.View
-import android.view.animation.TranslateAnimation
+import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -18,8 +18,6 @@ import com.example.petfindermap.adapters.ItemListAdvertAdapter
 import com.example.petfindermap.models.AdvertModel
 import com.example.petfindermap.services.AdvertService
 import com.example.petfindermap.services.UserService
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -38,23 +36,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     )
     //
     private lateinit var googleMap: GoogleMap
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var deviceCurrentLocation: Location
-    private var isUp: Boolean = false
-    private lateinit var slideListAdvertsView: View
+    private var flagOpenListAdverts: Boolean = false
+    private lateinit var viewListAdverts: View
+    private lateinit var buttonListAdverts: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
-        super.getSupportActionBar()?.hide()
         entry()
-        //
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        //
-        slideListAdvertsView = findViewById(R.id.list_slide)
-        slideListAdvertsView.visibility = View.INVISIBLE
-        //
+        super.onCreate(savedInstanceState)
+        super.getSupportActionBar()?.hide()
+        setContentView(R.layout.activity_maps)
+        viewListAdverts = findViewById(R.id.list_slide)
+        buttonListAdverts = findViewById(R.id.buttonListAdverts)
+        viewListAdverts.visibility = View.INVISIBLE
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -66,7 +61,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             startActivity(signUp)
         }
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
@@ -85,60 +79,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         return false
     }
 
-    fun listAdvertsMenu(view: View) {
-        val activityListAdverts = Intent(this, ActivityListAdverts::class.java)
-        startActivity(activityListAdverts)
-    }
-
     fun listAdvertsSlider(view: View) {
-        if (isUp) {
-            val animate = TranslateAnimation(
-                0F,
-                0F,
-                0F,
-                slideListAdvertsView.height.toFloat()
-            )
-            animate.duration = 500
-            animate.fillAfter = true
-            view.startAnimation(animate)
-            slideListAdvertsView.visibility = View.INVISIBLE
+        if (flagOpenListAdverts) {
+            viewListAdverts.visibility = View.INVISIBLE
+            buttonListAdverts.text = "К списку"
         } else {
-            slideListAdvertsView.visibility = View.VISIBLE
-            val animate = TranslateAnimation(
-                0F,
-                0F,
-                slideListAdvertsView.height.toFloat(),
-                0F
-            )
-            animate.duration = 500
-            animate.fillAfter = true
-            view.startAnimation(animate)
-            val customListImplement =
-                ItemListAdvertAdapter(slideListAdvertsView.context, services.advertService.listFindAdverts)
-            val listView: ListView = findViewById<ListView>(R.id.list_adverts)
-            listView.adapter = customListImplement
+            viewListAdverts.visibility = View.VISIBLE
+            val adapterListAdverts = ItemListAdvertAdapter(viewListAdverts.context, services.advertService.listFindAdverts)
+            val viewListViewAdverts: ListView = findViewById<ListView>(R.id.list_adverts)
+            viewListViewAdverts.adapter = adapterListAdverts
+            buttonListAdverts.text = "Скрыть"
         }
-        isUp = !isUp
+        flagOpenListAdverts = !flagOpenListAdverts
     }
 
     private fun findAdvertsInArea() {
-        var listAdverts: ArrayList<AdvertModel> = this.services.advertService.searchAdvertInArea(
+        val listAdverts: ArrayList<AdvertModel> = this.services.advertService.searchAdvertInArea(
             this.deviceCurrentLocation.latitude,
             this.deviceCurrentLocation.longitude
         )
         for (advert: AdvertModel in listAdverts) {
-            var position = LatLng(advert.GeoLatitude, advert.GeoLongitude)
-            var searchAdvertAreaCircle =
+            val position = LatLng(advert.GeoLatitude, advert.GeoLongitude)
+            val searchAdvertAreaCircle =
                 CircleOptions().center(LatLng(position.latitude, position.longitude))
                     .strokeWidth(0F)
-            var marker = MarkerOptions().position(position)
+            val marker = MarkerOptions().position(position)
             //
             if (advert.AdType == 1) {
-                searchAdvertAreaCircle.fillColor(Color.parseColor("#50f52f2f"))
+                searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
                 marker.title("Потерян " + advert.CommentText + "'")
                 searchAdvertAreaCircle.radius(200.0)
             } else {
-                searchAdvertAreaCircle.fillColor(Color.parseColor("#507be771"))
+                searchAdvertAreaCircle.fillColor(Color.parseColor("#908bf78c"))
                 marker.title("Найден " + advert.CommentText + "'")
                 searchAdvertAreaCircle.radius(100.0)
             }
