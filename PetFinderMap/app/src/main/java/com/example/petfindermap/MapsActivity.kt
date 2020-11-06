@@ -47,6 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        super.getSupportActionBar()?.hide()
         entry()
         //
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

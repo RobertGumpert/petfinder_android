@@ -16,6 +16,7 @@ class ActivityListAdverts: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_list_adverts)
+        super.getSupportActionBar()?.hide()
         //
         customListImplement = ItemListAdvertAdapter(this, advertService.listFindAdverts)
         val listView: ListView = findViewById<ListView>(R.id.list_adverts)
