@@ -33,6 +33,7 @@ class SignUpActivity : AppCompatActivity() {
                 )
             } catch (ex: java.lang.Exception) {
                 TextView.text = "Ошибка регистрации"
+                return@setOnClickListener
             }
             finish()
             val signIn = Intent(this, SignInActivity::class.java)
