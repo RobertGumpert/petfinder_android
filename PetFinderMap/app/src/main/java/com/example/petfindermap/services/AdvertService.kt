@@ -1,17 +1,18 @@
 package com.example.petfindermap.services
 
+import android.content.Context
 import com.example.petfindermap.models.AdvertModel
 
 class AdvertService {
 
     companion object {
         var instance: AdvertService? = null
-            get() {
-                if (field == null) {
-                    instance = AdvertService()
-                }
-                return field
+        fun getInstance(context: Context): AdvertService? {
+            if (instance == null){
+                instance = AdvertService()
             }
+            return instance
+        }
     }
 
     var listFindAdverts = arrayListOf(
