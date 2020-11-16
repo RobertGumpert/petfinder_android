@@ -13,6 +13,7 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.activities.ActivityListAdverts
+import com.example.petfindermap.activities.DialogsActivity
 import com.example.petfindermap.activities.SignUpActivity
 import com.example.petfindermap.adapters.ItemListAdvertAdapter
 import com.example.petfindermap.models.AdvertModel
@@ -37,8 +38,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     //
     private lateinit var googleMap: GoogleMap
     private lateinit var deviceCurrentLocation: Location
+    private var flagOpenMenu: Boolean = false
     private var flagOpenListAdverts: Boolean = false
+    private lateinit var viewMenu: View
     private lateinit var viewListAdverts: View
+    private lateinit var buttonMenu: Button
     private lateinit var buttonListAdverts: Button
 
 
@@ -47,9 +51,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         super.onCreate(savedInstanceState)
         super.getSupportActionBar()?.hide()
         setContentView(R.layout.activity_maps)
+
+        viewMenu = findViewById(R.id.menu_slide)
+        viewMenu.visibility = View.INVISIBLE
+        buttonMenu = findViewById(R.id.buttonMenu)
+
         viewListAdverts = findViewById(R.id.list_slide)
-        buttonListAdverts = findViewById(R.id.buttonListAdverts)
         viewListAdverts.visibility = View.INVISIBLE
+        buttonListAdverts = findViewById(R.id.buttonListAdverts)
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -79,16 +89,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         return false
     }
 
+    fun menuSlider(view: View) {
+        if (flagOpenListAdverts) return;
+        if (flagOpenMenu) {
+            viewMenu.visibility = View.INVISIBLE
+            buttonMenu.text = "Меню"
+            buttonListAdverts.visibility = View.VISIBLE
+        } else {
+            viewMenu.visibility = View.VISIBLE
+            buttonMenu.text = "Закрыть"
+            buttonListAdverts.visibility = View.INVISIBLE
+        }
+        flagOpenMenu = !flagOpenMenu
+    }
+
     fun listAdvertsSlider(view: View) {
+        if (flagOpenMenu) return;
         if (flagOpenListAdverts) {
             viewListAdverts.visibility = View.INVISIBLE
             buttonListAdverts.text = "К списку"
+            buttonMenu.visibility = View.VISIBLE
         } else {
             viewListAdverts.visibility = View.VISIBLE
             val adapterListAdverts = ItemListAdvertAdapter(viewListAdverts.context, services.advertService.listFindAdverts)
             val viewListViewAdverts: ListView = findViewById<ListView>(R.id.list_adverts)
             viewListViewAdverts.adapter = adapterListAdverts
             buttonListAdverts.text = "Скрыть"
+            buttonMenu.visibility = View.INVISIBLE
         }
         flagOpenListAdverts = !flagOpenListAdverts
     }
@@ -120,5 +147,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
     }
 
+    fun menuButton(view: View) {
+        when (view.id) {
+            R.id.textViewMenuMessages -> {
+                val dialogs = Intent(this, DialogsActivity::class.java)
+                startActivity(dialogs)
+            }
+        }
+    }
 }
 

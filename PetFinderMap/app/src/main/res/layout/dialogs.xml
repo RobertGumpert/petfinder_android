@@ -6,6 +6,25 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground">
 
+    <Button
+        android:id="@+id/buttonMenu"
+        android:layout_width="112dp"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentEnd="false"
+        android:background="#F6D047"
+        android:onClick="menuSlider"
+        android:text="Меню"
+        android:textColor="#2C2C2C"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -20,19 +39,6 @@
         app:layout_constraintTop_toBottomOf="@+id/button_menu"
         app:layout_constraintVertical_bias="0.301" />
 
-    <Button
-        android:id="@+id/button_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#FFF200"
-        android:text="Меню"
-        app:layout_constraintBottom_toTopOf="@+id/lvDialogs"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.077"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.317" />
-
     <ListView
         android:id="@+id/lvDialogs"
         android:layout_width="355dp"
@@ -46,4 +52,43 @@
         app:layout_constraintVertical_bias="0.904"
         android:dividerHeight="20sp"
         android:divider="@android:color/transparent"></ListView>
+
+    <RelativeLayout
+        android:id="@+id/menu_slide"
+        android:layout_width="205dp"
+        android:layout_height="730dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/textViewMenuMap"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="85dp"
+            android:text="Главная"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:onClick="menuButton"/>
+        <TextView
+            android:id="@+id/textViewMenuMyAds"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="135dp"
+            android:text="Мои объявления"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:onClick="menuButton"/>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

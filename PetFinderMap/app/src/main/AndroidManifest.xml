@@ -43,6 +43,7 @@
         <activity android:name=".activities.ActivityListAdverts" />
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.SignInActivity" />
+        <activity android:name=".activities.DialogsActivity" />
     </application>
 
 </manifest>
