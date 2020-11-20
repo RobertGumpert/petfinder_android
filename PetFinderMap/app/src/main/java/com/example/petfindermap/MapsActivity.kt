@@ -18,6 +18,7 @@ import com.example.petfindermap.activities.SignUpActivity
 import com.example.petfindermap.adapters.ItemListAdvertAdapter
 import com.example.petfindermap.models.AdvertModel
 import com.example.petfindermap.services.AdvertService
+import com.example.petfindermap.services.DialogsService
 import com.example.petfindermap.services.UserService
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
@@ -47,7 +48,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     override fun onCreate(savedInstanceState: Bundle?) {
         services = ServiceFacade(
             advertService = AdvertService.getInstance(this),
-            userService = UserService.getInstance(this)
+            userService = UserService.getInstance(this),
+            dialogsService = DialogsService.getInstance(this)
         )
         checkAuthorized()
         //

@@ -29,6 +29,7 @@ class DialogsActivity : AppCompatActivity() {
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
+        dialogsService.loadDialogsMessages()
         dialogsAdapter = DialogsAdapter(this, dialogsService.listDialogs)
         val lvMain: ListView = findViewById(R.id.lvDialogs) as ListView
         lvMain.setAdapter(dialogsAdapter)

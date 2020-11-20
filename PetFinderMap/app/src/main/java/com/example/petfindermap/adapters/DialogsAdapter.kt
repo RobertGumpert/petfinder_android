@@ -9,15 +9,15 @@ import com.example.petfindermap.R
 import com.example.petfindermap.models.DialogModel
 
 
-class DialogsAdapter(val context: Context?, val objects: ArrayList<DialogModel>?) : BaseAdapter() {
+class DialogsAdapter(val context: Context?, val objects: ArrayList<DialogModel>) : BaseAdapter() {
     var lInflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getCount(): Int {
-        return objects!!.size
+        return objects.size
     }
 
     override fun getItem(position: Int): Any {
-        return objects!![position]
+        return objects[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -32,7 +32,11 @@ class DialogsAdapter(val context: Context?, val objects: ArrayList<DialogModel>?
         val p: DialogModel = getDialog(position)
 
         (view?.findViewById(R.id.tvName) as TextView).text = p.name
-        (view.findViewById(R.id.ivUserImage) as ImageView).setImageResource(p.image)
+        var image = 0
+        if (p.avatarUrl == "") {
+            image = R.drawable.ic_baseline_account_circle_24
+        }
+        (view.findViewById(R.id.ivUserImage) as ImageView).setImageResource(image)
 
         return view
     }
