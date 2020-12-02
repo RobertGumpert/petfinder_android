@@ -1,6 +1,5 @@
 package com.example.petfindermap
 
-import com.example.petfindermap.db.AppDatabase
 import com.example.petfindermap.services.AdService
 import com.example.petfindermap.services.AdvertService
 import com.example.petfindermap.services.DialogsService

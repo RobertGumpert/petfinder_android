@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
-import kotlinx.android.synthetic.main.add.*
+import kotlinx.android.synthetic.main.add_ad.*
 
 class AddActivity : AppCompatActivity() {
 
@@ -15,7 +15,7 @@ class AddActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add)
+        setContentView(R.layout.add_ad)
         super.getSupportActionBar()?.hide()
         addAd()
     }

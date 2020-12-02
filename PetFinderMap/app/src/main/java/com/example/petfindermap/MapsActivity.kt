@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.activities.AddActivity
 import com.example.petfindermap.activities.DialogsActivity
+import com.example.petfindermap.activities.MyAdsActivity
 import com.example.petfindermap.activities.SignUpActivity
 import com.example.petfindermap.adapters.ItemListAdvertAdapter
 import com.example.petfindermap.models.AdvertModel
@@ -167,7 +168,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                 startActivity(dialogs)
             }
             R.id.textViewMenuMyAds -> {
-
+                val myAds = Intent(this, MyAdsActivity::class.java)
+                startActivity(myAds)
             }
         }
     }
