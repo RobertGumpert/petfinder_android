@@ -12,11 +12,12 @@ import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.petfindermap.activities.ActivityListAdverts
+import com.example.petfindermap.activities.AddActivity
 import com.example.petfindermap.activities.DialogsActivity
 import com.example.petfindermap.activities.SignUpActivity
 import com.example.petfindermap.adapters.ItemListAdvertAdapter
 import com.example.petfindermap.models.AdvertModel
+import com.example.petfindermap.services.AdService
 import com.example.petfindermap.services.AdvertService
 import com.example.petfindermap.services.DialogsService
 import com.example.petfindermap.services.UserService
@@ -49,7 +50,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         services = ServiceFacade(
             advertService = AdvertService.getInstance(this),
             userService = UserService.getInstance(this),
-            dialogsService = DialogsService.getInstance(this)
+            dialogsService = DialogsService.getInstance(this),
+            adService = AdService.getInstance(this)
         )
         checkAuthorized()
         //
@@ -61,7 +63,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        viewListAdverts = findViewById(R.id.list_slide)
+        viewListAdverts = findViewById(R.id.listSlide)
         viewListAdverts.visibility = View.INVISIBLE
         buttonListAdverts = findViewById(R.id.buttonListAdverts)
 
@@ -164,7 +166,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                 val dialogs = Intent(this, DialogsActivity::class.java)
                 startActivity(dialogs)
             }
+            R.id.textViewMenuMyAds -> {
+
+            }
         }
+    }
+
+    fun addAd(view: View) {
+        val addAd = Intent(this, AddActivity::class.java)
+        startActivity(addAd)
     }
 }
 

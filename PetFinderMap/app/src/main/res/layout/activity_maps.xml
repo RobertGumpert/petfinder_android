@@ -26,6 +26,25 @@
         app:layout_constraintVertical_bias="0.023" />
 
     <Button
+        android:id="@+id/buttonAddAd"
+        android:layout_width="112dp"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentEnd="false"
+        android:background="#F6D047"
+        android:onClick="addAd"
+        android:text="Добавить объявление"
+        android:textColor="#2C2C2C"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.946"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
+    <Button
         android:id="@+id/buttonListAdverts"
         android:layout_width="200dp"
         android:layout_height="42dp"
@@ -53,7 +72,7 @@
         tools:layout_editor_absoluteY="198dp" />
 
     <RelativeLayout
-        android:id="@+id/list_slide"
+        android:id="@+id/listSlide"
         android:layout_width="410dp"
         android:layout_height="730dp"
         android:layout_alignParentBottom="true"
