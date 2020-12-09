@@ -4,10 +4,12 @@ import android.content.Context
 import com.example.petfindermap.R
 import com.example.petfindermap.db.AppDatabase
 import com.example.petfindermap.db.entity.Ad
-import com.example.petfindermap.models.MyAdModel
+import com.example.petfindermap.models.AdModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AdService(context: Context) {
     var appDatabase : AppDatabase? = AppDatabase.getInstance(context)
@@ -23,9 +25,9 @@ class AdService(context: Context) {
     }
 
 
-    fun addAd(Type: String, Pet: String, Name: String, Breed: String, Address: String, Date: String, Comment: String) {
+    fun addAd(Type: Boolean, Pet: String, Name: String, Breed: String, Address: String, Date: Long, Comment: String) {
 
-        if (Type.isEmpty() || Pet.isEmpty() || Breed.isEmpty() || Name.isEmpty() || Address.isEmpty() || Date.isEmpty()) {
+        if (Pet.isEmpty() || Breed.isEmpty() || Name.isEmpty() || Address.isEmpty()) {
             throw java.lang.Exception("Non valid data.")
         }
         runBlocking {
@@ -39,6 +41,7 @@ class AdService(context: Context) {
                 appDatabase?.adDao()?.insert(
                     Ad(
                         adId = id,
+                        userName = "Виктория Дмитриева",
                         typeAd = Type,
                         name = Name,
                         pet = Pet,
@@ -54,18 +57,25 @@ class AdService(context: Context) {
         }
     }
 
-    fun getAds(): ArrayList<MyAdModel> {
-        val myAdListItems : ArrayList<MyAdModel> = ArrayList()
+    fun getAds(): ArrayList<AdModel> {
+        val myAdListItems : ArrayList<AdModel> = ArrayList()
         runBlocking {
             val reader = GlobalScope.launch {
                 val list = appDatabase?.adDao()?.getAll()
                 if (list != null) {
                     list.forEach {
                         myAdListItems.add(
-                            MyAdModel(
+                            AdModel(
+                                it.adId,
+                                it.userName,
+                                it.typeAd,
+                                it.pet,
                                 it.name,
+                                it.breed,
                                 it.address,
-                                R.drawable.dog
+                                Date(it.date),
+                                R.drawable.dog,
+                                it.comment
                             )
                         )
                     }
@@ -74,5 +84,30 @@ class AdService(context: Context) {
             reader.join()
         }
         return myAdListItems
+    }
+
+    fun getAd(id: Long) : AdModel? {
+        var adModel : AdModel? = null
+        runBlocking {
+            val reader = GlobalScope.launch {
+                val ad: Ad? = appDatabase?.adDao()?.getById(id)
+                if (ad != null) {
+                    adModel = AdModel(
+                        ad.adId,
+                        ad.userName,
+                        ad.typeAd,
+                        ad.pet,
+                        ad.name,
+                        ad.breed,
+                        ad.address,
+                        Date(ad.date),
+                        R.drawable.dog,
+                        ad.comment
+                    )
+                }
+            }
+            reader.join()
+        }
+        return adModel
     }
 }

@@ -8,9 +8,9 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.petfindermap.R
-import com.example.petfindermap.models.MyAdModel
+import com.example.petfindermap.models.AdModel
 
-class MyAdsAdapter (val context: Context?, val objects: ArrayList<MyAdModel>?) : BaseAdapter() {
+class MyAdsAdapter (val context: Context?, val objects: ArrayList<AdModel>?) : BaseAdapter() {
     var lInflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getCount(): Int {
@@ -30,16 +30,16 @@ class MyAdsAdapter (val context: Context?, val objects: ArrayList<MyAdModel>?) :
         if (view == null) {
             view = lInflater?.inflate(R.layout.my_ads_item, parent, false)
         }
-        val p: MyAdModel = getList(position)
+        val p: AdModel = getList(position)
 
         (view?.findViewById(R.id.tvName) as TextView).text = p.name
         (view?.findViewById(R.id.tvAddress) as TextView).text = p.address
         (view.findViewById(R.id.ivPetImage) as ImageView).setImageResource(p.image)
-
+        view.tag = p.id
         return view
     }
 
-    private fun getList(position: Int): MyAdModel {
-        return getItem(position) as MyAdModel
+    private fun getList(position: Int): AdModel {
+        return getItem(position) as AdModel
     }
 }

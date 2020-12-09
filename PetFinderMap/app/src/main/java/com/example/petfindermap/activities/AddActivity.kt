@@ -8,6 +8,7 @@ import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
 import kotlinx.android.synthetic.main.add_ad.*
+import java.util.*
 
 class AddActivity : AppCompatActivity() {
 
@@ -27,12 +28,13 @@ class AddActivity : AppCompatActivity() {
 
     private fun addAd() {
         buttonAdd.setOnClickListener {
-            val type = toggleButtonType.text.toString()
+            var type = false
+            if (toggleButtonType.text == "Потерян") type = true
             val pet = editTextPet.text.toString()
             val name = editTextName.text.toString()
             val breed = editTextBreed.text.toString()
             val address = editTextAddress.text.toString()
-            val date = calendarView.date.toString()
+            val date = calendarView.date
             val comment = editTextComment.text.toString()
             try {
                 adService.addAd(

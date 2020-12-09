@@ -12,8 +12,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DialogsService(context: Context) {
-    var listDialogs: ArrayList<DialogModel> = ArrayList()
-
     var appDatabase : AppDatabase = AppDatabase.instance!!
 
     companion object {
@@ -26,7 +24,8 @@ class DialogsService(context: Context) {
         }
     }
 
-    fun loadDialogsMessages() {
+    fun getDialogsMessages(): ArrayList<DialogModel> {
+        var listDialogs: ArrayList<DialogModel> = ArrayList()
         runBlocking {
             val writer = GlobalScope.launch {
                 var list = appDatabase.dialogDao().getAll()
@@ -55,14 +54,15 @@ class DialogsService(context: Context) {
             }
             writer.join()
         }
+        return listDialogs
     }
 
-    fun getMessagesByDialogId(id: Int): List<MessageModel>? {
+    private fun getMessagesByDialogId(id: Int): List<MessageModel>? {
         var list = fillData()
         return list.find { element -> element.id == id }?.messages
     }
 
-    fun fillData(): ArrayList<DialogModel> {
+    private fun fillData(): ArrayList<DialogModel> {
         var names = arrayOf(
             "Кузнецов Влад",
             "Максин Илья",

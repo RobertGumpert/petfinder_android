@@ -46,6 +46,7 @@
         <activity android:name=".activities.DialogsActivity" />
         <activity android:name=".activities.AddActivity" />
         <activity android:name=".activities.MyAdsActivity" />
+        <activity android:name=".activities.AdActivity" />
     </application>
 
 </manifest>

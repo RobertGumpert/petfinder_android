@@ -67,13 +67,25 @@
         app:layout_constraintVertical_bias="0.0">
 
         <TextView
-            android:id="@+id/textViewMenuMap"
+            android:id="@+id/textViewRefresh"
             android:layout_width="150dp"
             android:layout_height="30dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
             android:layout_marginTop="85dp"
+            android:text="Обновить страницу"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:onClick="menuButton"/>
+        <TextView
+            android:id="@+id/textViewMenuMap"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="135dp"
             android:text="Главная"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -85,7 +97,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
-            android:layout_marginTop="135dp"
+            android:layout_marginTop="185dp"
             android:text="Мои объявления"
             android:textSize="20sp"
             android:textStyle="bold"

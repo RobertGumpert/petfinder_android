@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.DialogsAdapter
-import com.example.petfindermap.models.DialogModel
+import com.example.petfindermap.dialogs.DialogRemoveDialog
 import com.example.petfindermap.services.DialogsService
 
 class DialogsActivity : AppCompatActivity() {
@@ -29,10 +29,9 @@ class DialogsActivity : AppCompatActivity() {
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        dialogsService.loadDialogsMessages()
-        dialogsAdapter = DialogsAdapter(this, dialogsService.listDialogs)
-        val lvMain: ListView = findViewById(R.id.lvDialogs) as ListView
-        lvMain.setAdapter(dialogsAdapter)
+        dialogsAdapter = DialogsAdapter(this, dialogsService.getDialogsMessages())
+        val lvMain: ListView = findViewById(R.id.lvDialogs)
+        lvMain.adapter = dialogsAdapter
     }
 
     fun menuSlider(view: View) {
@@ -48,8 +47,20 @@ class DialogsActivity : AppCompatActivity() {
 
     fun menuButton(view: View) {
         when (view.id) {
+            R.id.textViewRefresh -> {
+                val dialog = DialogRemoveDialog();
+                dialog.show(supportFragmentManager, "custom")
+            }
+        }
+        when (view.id) {
             R.id.textViewMenuMap -> {
                 val map = Intent(this, MapsActivity::class.java)
+                startActivity(map)
+            }
+        }
+        when (view.id) {
+            R.id.textViewMenuMyAds -> {
+                val map = Intent(this, MyAdsActivity::class.java)
                 startActivity(map)
             }
         }

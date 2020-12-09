@@ -51,15 +51,16 @@ class MyAdsActivity : AppCompatActivity() {
                 val maps = Intent(this, MapsActivity::class.java)
                 startActivity(maps)
             }
-            R.id.textViewMenuMyAds -> {
-                val myAds = Intent(this, MyAdsActivity::class.java)
-                startActivity(myAds)
+            R.id.textViewMenuMessages -> {
+                val dialogs = Intent(this, DialogsActivity::class.java)
+                startActivity(dialogs)
             }
         }
     }
 
-    fun ad (view: View?) {
-        val intent = Intent(this, MapsActivity::class.java)
+    fun adItemPress (view: View?) {
+        val intent = Intent(this, AdActivity::class.java)
+        intent.putExtra("adId", view?.tag.toString())
         startActivity(intent)
     }
 }
