@@ -115,6 +115,10 @@ class AdService(context: Context) {
         return adModel
     }
 
+    fun createComplaint(adId: Long) {
+
+    }
+
 //    fun searchAdvertInArea(GeoLatitude: Double, GeoLongitude: Double): ArrayList<AdvertModel> {
 //        //
 //        listFindAdverts[0].GeoLatitude = GeoLatitude + 0.001

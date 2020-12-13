@@ -12,7 +12,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@color/colorButton"
-        android:onClick="toMain"
+        android:onClick="goBack"
         android:text="Назад"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -142,7 +142,8 @@
                 android:background="@color/colorButton"
                 android:text="Жалоба"
                 android:textColor="#000000"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:onClick="createComplaint"/>
 
             <Button
                 android:id="@+id/buttonClose"

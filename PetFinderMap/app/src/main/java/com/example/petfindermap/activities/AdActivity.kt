@@ -14,14 +14,18 @@ import com.example.petfindermap.services.AdService
 class AdActivity : AppCompatActivity() {
     private var adService: AdService = AdService.instance!!
 
+    private var adId: Long = -1
+    private var isMine: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ad)
         super.getSupportActionBar()?.hide()
 
         val adId = intent.getStringExtra("adId").toLong()
+        this.adId = adId
         val isMine = intent.getStringExtra("isMine").toBoolean()
-
+        this.isMine = isMine
         val ad = adService.getAd(adId)
         if (ad == null) {
             val intent = Intent(this, MapsActivity::class.java)
@@ -77,8 +81,24 @@ class AdActivity : AppCompatActivity() {
         }
     }
 
+    fun goBack (view: View?) {
+        if (isMine) {
+            val intent = Intent(this, MyAdsActivity::class.java)
+            startActivity(intent)
+        }
+        else {
+            toMain(view)
+        }
+    }
+
     fun toMain (view: View?) {
         val intent = Intent(this, MapsActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun createComplaint (view: View?) {
+        val intent = Intent(this, ComplaintActivity::class.java)
+        intent.putExtra("adId", adId.toString())
         startActivity(intent)
     }
 }
