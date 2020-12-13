@@ -73,6 +73,8 @@ class AdService(context: Context) {
                                 it.name,
                                 it.breed,
                                 it.address,
+                                0.0,
+                                0.0,
                                 Date(it.date),
                                 R.drawable.dog,
                                 it.comment
@@ -100,6 +102,8 @@ class AdService(context: Context) {
                         ad.name,
                         ad.breed,
                         ad.address,
+                        0.0,
+                        0.0,
                         Date(ad.date),
                         R.drawable.dog,
                         ad.comment
@@ -110,4 +114,15 @@ class AdService(context: Context) {
         }
         return adModel
     }
+
+//    fun searchAdvertInArea(GeoLatitude: Double, GeoLongitude: Double): ArrayList<AdvertModel> {
+//        //
+//        listFindAdverts[0].GeoLatitude = GeoLatitude + 0.001
+//        listFindAdverts[0].GeoLongitude = GeoLongitude
+//        //
+//        listFindAdverts[1].GeoLatitude = GeoLatitude
+//        listFindAdverts[1].GeoLongitude = GeoLongitude + 0.001
+//        //
+//        return listFindAdverts
+//    }
 }

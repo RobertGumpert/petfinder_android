@@ -10,6 +10,8 @@ class AdModel(
     val name: String,
     val breed: String,
     val address: String,
+    val GeoLatitude: Double,
+    val GeoLongitude: Double,
     var date: Date,
     val image: Int,
     val comment: String)

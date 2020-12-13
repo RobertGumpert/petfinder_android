@@ -116,7 +116,7 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/buttonWrite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -125,13 +125,33 @@
                 android:textSize="14sp" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/buttonUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorButton"
+                android:text="Редактировать"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/buttonComplaint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:background="@color/colorButton"
                 android:text="Жалоба"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/buttonClose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/colorButton"
+                android:text="Закрыть объявление"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 

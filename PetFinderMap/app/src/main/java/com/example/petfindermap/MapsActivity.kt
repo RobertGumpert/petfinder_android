@@ -12,14 +12,9 @@ import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.petfindermap.activities.AddActivity
-import com.example.petfindermap.activities.DialogsActivity
-import com.example.petfindermap.activities.MyAdsActivity
-import com.example.petfindermap.activities.SignUpActivity
-import com.example.petfindermap.adapters.ItemListAdvertAdapter
-import com.example.petfindermap.models.AdvertModel
+import com.example.petfindermap.activities.*
+import com.example.petfindermap.adapters.AdsAdapter
 import com.example.petfindermap.services.AdService
-import com.example.petfindermap.services.AdvertService
 import com.example.petfindermap.services.DialogsService
 import com.example.petfindermap.services.UserService
 import com.google.android.gms.maps.GoogleMap
@@ -31,8 +26,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 
-
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener {
 
     private lateinit var services: ServiceFacade
@@ -42,14 +35,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     private var flagOpenMenu: Boolean = false
     private var flagOpenListAdverts: Boolean = false
     private lateinit var viewMenu: View
-    private lateinit var viewListAdverts: View
+    private lateinit var viewListAdverts: ListView
     private lateinit var buttonMenu: Button
+    private lateinit var buttonAddAd: Button
     private lateinit var buttonListAdverts: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         services = ServiceFacade(
-            advertService = AdvertService.getInstance(this),
             userService = UserService.getInstance(this),
             dialogsService = DialogsService.getInstance(this),
             adService = AdService.getInstance(this)
@@ -64,7 +57,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        viewListAdverts = findViewById(R.id.listSlide)
+        buttonAddAd = findViewById(R.id.buttonAddAd)
+
+        viewListAdverts = findViewById(R.id.lvAds)
         viewListAdverts.visibility = View.INVISIBLE
         buttonListAdverts = findViewById(R.id.buttonListAdverts)
 
@@ -94,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     override fun onMyLocationButtonClick(): Boolean {
         googleMap.clear()
         this.deviceCurrentLocation = googleMap.myLocation
-        findAdvertsInArea()
+//        findAdvertsInArea()
         return false
     }
 
@@ -118,48 +113,49 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             viewListAdverts.visibility = View.INVISIBLE
             buttonListAdverts.text = "К списку"
             buttonMenu.visibility = View.VISIBLE
+            buttonAddAd.visibility = View.VISIBLE
         } else {
             viewListAdverts.visibility = View.VISIBLE
-            val adapterListAdverts = ItemListAdvertAdapter(
-                viewListAdverts.context,
-                services.advertService?.listFindAdverts
+            val adapterListAdverts = AdsAdapter(
+                this,
+                services.adService?.getAds()
             )
-            val viewListViewAdverts: ListView = findViewById<ListView>(R.id.list_adverts)
-            viewListViewAdverts.adapter = adapterListAdverts
+            viewListAdverts.adapter = adapterListAdverts
             buttonListAdverts.text = "Скрыть"
             buttonMenu.visibility = View.INVISIBLE
+            buttonAddAd.visibility = View.INVISIBLE
         }
         flagOpenListAdverts = !flagOpenListAdverts
     }
 
-    private fun findAdvertsInArea() {
-        val listAdverts: ArrayList<AdvertModel>? = this.services.advertService?.searchAdvertInArea(
-            this.deviceCurrentLocation.latitude,
-            this.deviceCurrentLocation.longitude
-        )
-        if (listAdverts != null) {
-            for (advert: AdvertModel in listAdverts) {
-                val position = LatLng(advert.GeoLatitude, advert.GeoLongitude)
-                val searchAdvertAreaCircle =
-                    CircleOptions().center(LatLng(position.latitude, position.longitude))
-                        .strokeWidth(0F)
-                val marker = MarkerOptions().position(position)
-                //
-                if (advert.AdType == 1) {
-                    searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
-                    marker.title("Потерян " + advert.CommentText + "'")
-                    searchAdvertAreaCircle.radius(200.0)
-                } else {
-                    searchAdvertAreaCircle.fillColor(Color.parseColor("#908bf78c"))
-                    marker.title("Найден " + advert.CommentText + "'")
-                    searchAdvertAreaCircle.radius(100.0)
-                }
-                //
-                googleMap.addMarker(marker).showInfoWindow()
-                googleMap.addCircle(searchAdvertAreaCircle)
-            }
-        }
-    }
+//    private fun findAdvertsInArea() {
+//        val listAdverts: ArrayList<AdvertModel>? = this.services.advertService?.searchAdvertInArea(
+//            this.deviceCurrentLocation.latitude,
+//            this.deviceCurrentLocation.longitude
+//        )
+//        if (listAdverts != null) {
+//            for (advert: AdvertModel in listAdverts) {
+//                val position = LatLng(advert.GeoLatitude, advert.GeoLongitude)
+//                val searchAdvertAreaCircle =
+//                    CircleOptions().center(LatLng(position.latitude, position.longitude))
+//                        .strokeWidth(0F)
+//                val marker = MarkerOptions().position(position)
+//                //
+//                if (advert.AdType == 1) {
+//                    searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
+//                    marker.title("Потерян " + advert.CommentText + "'")
+//                    searchAdvertAreaCircle.radius(200.0)
+//                } else {
+//                    searchAdvertAreaCircle.fillColor(Color.parseColor("#908bf78c"))
+//                    marker.title("Найден " + advert.CommentText + "'")
+//                    searchAdvertAreaCircle.radius(100.0)
+//                }
+//                //
+//                googleMap.addMarker(marker).showInfoWindow()
+//                googleMap.addCircle(searchAdvertAreaCircle)
+//            }
+//        }
+//    }
 
     fun menuButton(view: View) {
         when (view.id) {
@@ -177,6 +173,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     fun addAd(view: View) {
         val addAd = Intent(this, AddActivity::class.java)
         startActivity(addAd)
+    }
+
+    fun adItemPress (view: View?) {
+        val intent = Intent(this, AdActivity::class.java)
+        intent.putExtra("adId", view?.tag.toString())
+        intent.putExtra("isMine", (false).toString())
+        startActivity(intent)
     }
 }
 

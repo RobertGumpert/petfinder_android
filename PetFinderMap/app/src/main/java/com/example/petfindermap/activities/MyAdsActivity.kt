@@ -8,11 +8,11 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
-import com.example.petfindermap.adapters.MyAdsAdapter
+import com.example.petfindermap.adapters.AdsAdapter
 import com.example.petfindermap.services.AdService
 
 class MyAdsActivity : AppCompatActivity() {
-    lateinit var myListAdapter: MyAdsAdapter
+    lateinit var listAdapter: AdsAdapter
     private var adService: AdService = AdService.instance!!
 
     private var flagOpenMenu: Boolean = false
@@ -28,10 +28,10 @@ class MyAdsActivity : AppCompatActivity() {
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        myListAdapter = MyAdsAdapter(this, adService.getAds())
+        listAdapter = AdsAdapter(this, adService.getAds())
 
         val lvMyList: ListView = findViewById(R.id.lvAds) as ListView
-        lvMyList.setAdapter(myListAdapter)
+        lvMyList.setAdapter(listAdapter)
     }
 
     fun menuSlider(view: View) {
@@ -61,6 +61,7 @@ class MyAdsActivity : AppCompatActivity() {
     fun adItemPress (view: View?) {
         val intent = Intent(this, AdActivity::class.java)
         intent.putExtra("adId", view?.tag.toString())
+        intent.putExtra("isMine", (true).toString())
         startActivity(intent)
     }
 }

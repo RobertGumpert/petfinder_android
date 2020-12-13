@@ -10,7 +10,7 @@ import android.widget.TextView
 import com.example.petfindermap.R
 import com.example.petfindermap.models.AdModel
 
-class MyAdsAdapter (val context: Context?, val objects: ArrayList<AdModel>?) : BaseAdapter() {
+class AdsAdapter (val context: Context?, val objects: ArrayList<AdModel>?) : BaseAdapter() {
     var lInflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getCount(): Int {
@@ -28,7 +28,7 @@ class MyAdsAdapter (val context: Context?, val objects: ArrayList<AdModel>?) : B
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var view: View? = convertView
         if (view == null) {
-            view = lInflater?.inflate(R.layout.my_ads_item, parent, false)
+            view = lInflater?.inflate(R.layout.ads_item, parent, false)
         }
         val p: AdModel = getList(position)
 

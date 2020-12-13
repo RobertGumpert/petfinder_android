@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
 
 
     <Button
@@ -71,28 +72,18 @@
         tools:context=".MapsActivity"
         tools:layout_editor_absoluteY="198dp" />
 
-    <RelativeLayout
-        android:id="@+id/listSlide"
+    <ListView
+        android:id="@+id/lvAds"
         android:layout_width="410dp"
-        android:layout_height="730dp"
-        android:layout_alignParentBottom="true"
-        android:background="#FFFFFF"
+        android:layout_height="650dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        tools:context="com.example.petfindermap.activities.ActivityListAdverts">
+        app:layout_constraintVertical_bias="1.0" />
 
-        <ListView
-            android:id="@+id/list_adverts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
+        <RelativeLayout
         android:id="@+id/menu_slide"
         android:layout_width="205dp"
         android:layout_height="730dp"
