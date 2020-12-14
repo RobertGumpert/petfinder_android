@@ -89,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     override fun onMyLocationButtonClick(): Boolean {
         googleMap.clear()
         this.deviceCurrentLocation = googleMap.myLocation
-//        findAdvertsInArea()
+        //findAdvertsInArea()
         return false
     }
 
@@ -127,9 +127,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
         flagOpenListAdverts = !flagOpenListAdverts
     }
-
+//
 //    private fun findAdvertsInArea() {
-//        val listAdverts: ArrayList<AdvertModel>? = this.services.advertService?.searchAdvertInArea(
+//        val listAdverts: ArrayList<AdvertModel>? = this.services.adService?.searchAdvertInArea(
 //            this.deviceCurrentLocation.latitude,
 //            this.deviceCurrentLocation.longitude
 //        )
