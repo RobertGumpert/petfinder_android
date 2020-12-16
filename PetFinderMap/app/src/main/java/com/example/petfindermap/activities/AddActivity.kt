@@ -91,7 +91,6 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 map.clear()
                 map.addMarker(MarkerOptions().position(location).draggable(true))
                 val titleStr = getAddress(location)
-                textViewAdress.text = titleStr
 
             }
         })
