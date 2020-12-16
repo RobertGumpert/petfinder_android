@@ -14,17 +14,25 @@ import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
 import com.example.petfindermap.services.AdService
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener  {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
+    GoogleMap.OnMarkerClickListener {
     private var adService: AdService = AdService.getInstance()
 
     private lateinit var googleMap: GoogleMap
     private lateinit var deviceCurrentLocation: Location
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private var flagOpenMenu: Boolean = false
     private var flagOpenListAdverts: Boolean = false
     private lateinit var viewMenu: View
@@ -52,6 +60,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
 
@@ -65,6 +74,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         ) {
             this.googleMap.isMyLocationEnabled = true
         }
+        googleMap.getUiSettings().setZoomControlsEnabled(true)
+        googleMap.setOnMarkerClickListener(this)
+        setUpMap()
     }
 
     override fun onMyLocationButtonClick(): Boolean {
@@ -161,6 +173,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         intent.putExtra("adId", view?.tag.toString())
         intent.putExtra("isMine", (false).toString())
         startActivity(intent)
+    }
+
+    override fun onMarkerClick(p0: Marker?) = false
+
+    companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
+
+    private fun setUpMap() {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+        googleMap.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
+
+            if (location != null) {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+            }
+        }
     }
 }
 

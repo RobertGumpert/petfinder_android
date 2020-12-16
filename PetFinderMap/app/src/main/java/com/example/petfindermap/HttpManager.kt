@@ -8,7 +8,7 @@ import java.io.IOException
 class HttpManager {
     private val client = OkHttpClient()
     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
-    private val url = "http://192.168.1.67:5490"
+    private val url = "http://192.168.1.65:5490"
 
     companion object {
         private var instance: HttpManager? = null
