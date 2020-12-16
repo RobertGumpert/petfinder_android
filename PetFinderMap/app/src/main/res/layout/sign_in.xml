@@ -35,26 +35,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
-        android:text="TextView"
+        android:text="Авторизация"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Авторизация" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/ButtonSignUp"
+        android:id="@+id/ButtonSignIn"
         android:layout_width="155dp"
         android:layout_height="47dp"
         android:layout_marginTop="40dp"
         android:background="#F6D047"
-        android:text="Авторизация"
+        android:onClick="signIn"
+        android:text="Войти"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TextPassword"
         app:layout_constraintVertical_bias="0.041" />
+
+    <Button
+        android:id="@+id/ButtonGoToSignUp"
+        android:layout_width="155dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="40dp"
+        android:background="#F6D047"
+        android:onClick="goToSignUp"
+        android:text="Регистрация"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextPassword"
+        app:layout_constraintVertical_bias="0.476" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

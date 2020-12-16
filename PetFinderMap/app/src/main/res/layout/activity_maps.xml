@@ -69,13 +69,13 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MapsActivity"
+        tools:context=".activities.MapsActivity"
         tools:layout_editor_absoluteY="198dp" />
 
     <ListView
         android:id="@+id/lvAds"
         android:layout_width="410dp"
-        android:layout_height="530dp"
+        android:layout_height="650dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

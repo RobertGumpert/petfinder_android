@@ -6,14 +6,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.DialogsAdapter
 import com.example.petfindermap.dialogs.DialogRemoveDialog
 import com.example.petfindermap.services.DialogsService
 
 class DialogsActivity : AppCompatActivity() {
-    private var dialogsService: DialogsService = DialogsService.instance!!
+    private var dialogsService: DialogsService = DialogsService.getInstance()
     lateinit var dialogsAdapter: DialogsAdapter
 
     private var flagOpenMenu: Boolean = false
@@ -64,5 +63,11 @@ class DialogsActivity : AppCompatActivity() {
                 startActivity(map)
             }
         }
+    }
+
+    fun dialogItemPress (view: View?) {
+        val intent = Intent(this, MessagesActivity::class.java)
+        intent.putExtra("dialogId", view?.tag.toString())
+        startActivity(intent)
     }
 }

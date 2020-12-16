@@ -8,7 +8,7 @@ import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
 
 class ComplaintActivity : AppCompatActivity() {
-    private var adService: AdService = AdService.instance!!
+    private var adService: AdService = AdService.getInstance()
     private var adId: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {

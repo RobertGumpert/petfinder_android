@@ -1,9 +1,10 @@
 package com.example.petfindermap.models
 
 data class UserModel(
-    var UserID: Int,
-    var Telephone: String,
-    var Name: String,
-    var Email: String,
-    var Password: String
+    var user_id: Int,
+    var telephone: String,
+    var email: String,
+    var name: String,
+    var avatar_url: String,
+    var access_token: String
 )

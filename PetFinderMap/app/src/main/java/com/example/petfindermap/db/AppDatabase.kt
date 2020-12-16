@@ -18,16 +18,20 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun adDao(): AdDao
 
     companion object {
-        var instance: AppDatabase? = null
+        private var instance: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase? {
+        fun getInstance(context: Context): AppDatabase {
             if (instance == null){
                 synchronized(AppDatabase::class){
-                    instance = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "petfinder_db_2")
+                    instance = Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "petfinder_db_3")
                         .build()
                 }
             }
-            return instance
+            return instance!!
+        }
+
+        fun getInstance(): AppDatabase {
+            return instance!!
         }
 
         fun destroyDataBase() {

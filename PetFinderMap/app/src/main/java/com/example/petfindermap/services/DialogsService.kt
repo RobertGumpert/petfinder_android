@@ -11,16 +11,16 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DialogsService(context: Context) {
-    var appDatabase : AppDatabase = AppDatabase.instance!!
+class DialogsService {
+    var appDatabase : AppDatabase = AppDatabase.getInstance()
 
     companion object {
-        var instance: DialogsService? = null
-        fun getInstance(context: Context): DialogsService? {
+        private var instance: DialogsService? = null
+        fun getInstance(): DialogsService {
             if (instance == null){
-                instance = DialogsService(context)
+                instance = DialogsService()
             }
-            return instance
+            return instance!!
         }
     }
 
@@ -57,9 +57,9 @@ class DialogsService(context: Context) {
         return listDialogs
     }
 
-    private fun getMessagesByDialogId(id: Int): List<MessageModel>? {
+    fun getMessagesByDialogId(id: Int): List<MessageModel> {
         var list = fillData()
-        return list.find { element -> element.id == id }?.messages
+        return list.find { element -> element.id == id }?.messages!!
     }
 
     private fun fillData(): ArrayList<DialogModel> {

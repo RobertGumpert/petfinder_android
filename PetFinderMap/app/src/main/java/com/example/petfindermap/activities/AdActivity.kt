@@ -1,18 +1,18 @@
 package com.example.petfindermap.activities
 
 import android.content.Intent
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 
 class AdActivity : AppCompatActivity() {
-    private var adService: AdService = AdService.instance!!
+    private var adService: AdService = AdService.getInstance()
 
     private var adId: Long = -1
     private var isMine: Boolean = false
@@ -48,7 +48,8 @@ class AdActivity : AppCompatActivity() {
             textViewName.text = "Владелец: " + ad.userName
 
             val textViewDate: TextView  = findViewById(R.id.textViewDate)
-            textViewDate.text = typeTextDate + ad.date.toString()
+            val format = SimpleDateFormat("dd/MM/yyy")
+            textViewDate.text = typeTextDate + format.format(ad.date)
 
             val textViewAddress: TextView  = findViewById(R.id.textViewAddress)
             textViewAddress.text = ad.address

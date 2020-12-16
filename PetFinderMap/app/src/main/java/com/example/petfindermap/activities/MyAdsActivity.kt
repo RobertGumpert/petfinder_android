@@ -6,14 +6,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
 import com.example.petfindermap.services.AdService
 
 class MyAdsActivity : AppCompatActivity() {
     lateinit var listAdapter: AdsAdapter
-    private var adService: AdService = AdService.instance!!
+    private var adService: AdService = AdService.getInstance()
 
     private var flagOpenMenu: Boolean = false
     private lateinit var viewMenu: View

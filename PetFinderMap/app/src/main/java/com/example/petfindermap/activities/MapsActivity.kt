@@ -1,10 +1,9 @@
-package com.example.petfindermap
+package com.example.petfindermap.activities
 
 
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -12,24 +11,18 @@ import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.example.petfindermap.activities.*
+import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
 import com.example.petfindermap.services.AdService
-import com.example.petfindermap.services.DialogsService
-import com.example.petfindermap.services.UserService
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener  {
+    private var adService: AdService = AdService.getInstance()
 
-    private lateinit var services: ServiceFacade
-    //
     private lateinit var googleMap: GoogleMap
     private lateinit var deviceCurrentLocation: Location
     private var flagOpenMenu: Boolean = false
@@ -42,13 +35,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        services = ServiceFacade(
-            userService = UserService.getInstance(this),
-            dialogsService = DialogsService.getInstance(this),
-            adService = AdService.getInstance(this)
-        )
-        checkAuthorized()
-        //
         super.onCreate(savedInstanceState)
         super.getSupportActionBar()?.hide()
         setContentView(R.layout.activity_maps)
@@ -69,12 +55,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     }
 
 
-    private fun checkAuthorized() {
-        if (services.userService?.user == null) {
-            val signUp = Intent(this, SignUpActivity::class.java)
-            startActivity(signUp)
-        }
-    }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
@@ -118,7 +99,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             viewListAdverts.visibility = View.VISIBLE
             val adapterListAdverts = AdsAdapter(
                 this,
-                services.adService?.getAds()
+                adService.getAds()
             )
             viewListAdverts.adapter = adapterListAdverts
             buttonListAdverts.text = "Скрыть"

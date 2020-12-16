@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.petfindermap.MapsActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
 import kotlinx.android.synthetic.main.add_ad.*
@@ -12,7 +11,7 @@ import java.util.*
 
 class AddActivity : AppCompatActivity() {
 
-    private var adService: AdService = AdService.instance!!
+    private var adService: AdService = AdService.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
