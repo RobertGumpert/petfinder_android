@@ -56,9 +56,6 @@ class DialogsService {
                     val info = gson.fromJson(body, NumberHttpModel::class.java)
                     callback(info.id)
                 }
-                400 -> {
-
-                }
             }
         }
     }

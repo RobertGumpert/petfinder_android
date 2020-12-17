@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ListView
@@ -101,6 +102,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
                 runOnUiThread {
                     ads.forEach{
+                        Log.d("adInfo", it.toString())
                         val markerOptions = MarkerOptions().position(LatLng(it.geo_latitude, it.geo_longitude))
                         if(it.ad_type == 1){
                             markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
@@ -134,8 +136,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     }
 
     override fun onInfoWindowClick(marker: Marker?) {
+        val ad = ads.find { it.ad_id == marker?.tag}
+        if (ad == null) return
+        adService.saveAd(ad)
         val intent = Intent(this, AdActivity::class.java)
-        intent.putExtra("adId", marker?.tag.toString() )
         intent.putExtra("isMine", (false).toString())
         startActivity(intent)
     }
@@ -252,7 +256,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         if (ad == null) return
         adService.saveAd(ad)
         val intent = Intent(this, AdActivity::class.java)
-        intent.putExtra("adId", view?.tag.toString())
         intent.putExtra("isMine", (false).toString())
         startActivity(intent)
     }

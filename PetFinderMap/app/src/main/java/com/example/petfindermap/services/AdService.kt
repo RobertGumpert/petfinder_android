@@ -19,7 +19,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class AdService {
-    private val appDatabase : AppDatabase = AppDatabase.getInstance()
+//    private val appDatabase : AppDatabase = AppDatabase.getInstance()
     private val httpManager : HttpManager = HttpManager.getInstance()
     private val userService: UserService = UserService.getInstance()
     private val gson : Gson = Gson()

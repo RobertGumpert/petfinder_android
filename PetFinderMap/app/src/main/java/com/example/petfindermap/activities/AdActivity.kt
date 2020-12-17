@@ -62,25 +62,24 @@ class AdActivity : AppCompatActivity() {
         if (isMine) {
             val buttonWrite: Button = findViewById(R.id.buttonWrite)
             buttonWrite.visibility = View.INVISIBLE
-            val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
-            buttonComplaint.visibility = View.INVISIBLE
-
-            val buttonUpdate: Button = findViewById(R.id.buttonUpdate)
-            buttonUpdate.visibility = View.VISIBLE
-            val buttonClose: Button = findViewById(R.id.buttonClose)
-            buttonClose.visibility = View.VISIBLE
+//            val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
+//            buttonComplaint.visibility = View.INVISIBLE
+//
+//            val buttonUpdate: Button = findViewById(R.id.buttonUpdate)
+//            buttonUpdate.visibility = View.VISIBLE
+//            val buttonClose: Button = findViewById(R.id.buttonClose)
+//            buttonClose.visibility = View.VISIBLE
         }
         else {
             val buttonWrite: Button = findViewById(R.id.buttonWrite)
             buttonWrite.visibility = View.VISIBLE
-            val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
-            // do with complaints adding
-            buttonComplaint.visibility = View.INVISIBLE
-
-            val buttonUpdate: Button = findViewById(R.id.buttonUpdate)
-            buttonUpdate.visibility = View.INVISIBLE
-            val buttonClose: Button = findViewById(R.id.buttonClose)
-            buttonClose.visibility = View.INVISIBLE
+//            val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
+//            buttonComplaint.visibility = View.VISIBLE
+//
+//            val buttonUpdate: Button = findViewById(R.id.buttonUpdate)
+//            buttonUpdate.visibility = View.INVISIBLE
+//            val buttonClose: Button = findViewById(R.id.buttonClose)
+//            buttonClose.visibility = View.INVISIBLE
         }
     }
 
@@ -111,9 +110,11 @@ class AdActivity : AppCompatActivity() {
         if (ad == null) return
         dialogsService.createDialog(ad.ad_owner_id, ad.ad_owner_name) {
             if (it != null) {
-                val intent = Intent(this, MessagesActivity::class.java)
-                intent.putExtra("dialog_id", it)
-                startActivity(intent)
+                runOnUiThread {
+                    val intent = Intent(this, MessagesActivity::class.java)
+                    intent.putExtra("dialog_id", it.toString())
+                    startActivity(intent)
+                }
             }
         }
     }
