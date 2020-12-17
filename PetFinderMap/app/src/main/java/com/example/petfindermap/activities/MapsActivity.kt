@@ -8,12 +8,13 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ListView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
-import com.example.petfindermap.models.AdModel
 import com.example.petfindermap.services.AdService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlin.jvm.JvmName as JvmName1
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
@@ -34,7 +36,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     private lateinit var googleMap: GoogleMap
     private lateinit var deviceCurrentLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private lateinit var markerAd : Marker
     private var flagOpenMenu: Boolean = false
     private var flagOpenListAdverts: Boolean = false
     private lateinit var viewMenu: View
@@ -78,19 +80,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
 
         adService.getAds().forEach{
-            val markerOptions = MarkerOptions().position(LatLng(it.GeoLatitude, it.GeoLongitude)).draggable(true)
+            val markerOptions = MarkerOptions().position(LatLng(it.GeoLatitude, it.GeoLongitude))
             if(it.typeAd == true){
-                markerOptions.
+                markerOptions.title("Потерян " + it.pet + " " + it.name)
             }
-            googleMap.addMarker(markerOptions)
+            else{
+                markerOptions.title("Найден " + it.pet + " " + it.name)
+            }
+            markerAd = this.googleMap.addMarker(markerOptions)
+            markerAd.setTag(it.id)
         }
 
 
+        this.googleMap.setOnMarkerClickListener ( object :GoogleMap.OnMarkerClickListener {
+            override fun onMarkerClick(marker: Marker): Boolean {
+//            if (marker.equals(markerAd)) {
+//                val intent = Intent(this, AdActivity::class.java)
+//                startActivity(intent)
+//            }
+//            val intent = Intent(this, AdActivity::class.java)
+//            startActivity(intent)
+                return true
+            }
+        })
 
-        googleMap.getUiSettings().setZoomControlsEnabled(true)
-        googleMap.setOnMarkerClickListener(this)
+        this.googleMap.getUiSettings().setZoomControlsEnabled(true)
+        this.googleMap.setOnMarkerClickListener(this)
         setUpMap()
     }
+
+
+
+
 
     override fun onMyLocationButtonClick(): Boolean {
         googleMap.clear()
@@ -181,7 +202,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         startActivity(addAd)
     }
 
-    fun adItemPress (view: View?) {
+    fun adItemPress(view: View?) {
         val intent = Intent(this, AdActivity::class.java)
         intent.putExtra("adId", view?.tag.toString())
         intent.putExtra("isMine", (false).toString())
@@ -195,10 +216,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     }
 
     private fun setUpMap() {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return
         }
         googleMap.isMyLocationEnabled = true

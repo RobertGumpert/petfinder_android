@@ -155,7 +155,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
         return false
     }
 
-    override fun onMarkerClick(p0: Marker?) = true
+    override fun onMarkerClick(p0: Marker?) = false
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
