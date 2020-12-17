@@ -33,6 +33,8 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
     private var adService: AdService = AdService.getInstance()
     private lateinit var map: GoogleMap
     private lateinit var deviceCurrentLocation: Location
+    private lateinit var locationAd: LatLng
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +70,8 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                     Name = name,
                     Breed = breed,
                     Address = address,
+                    GeoLatitude = locationAd.latitude,
+                    GeoLongitude = locationAd.longitude,
                     Date = date,
                     Comment = comment
                 )
@@ -91,6 +95,9 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 map.clear()
                 map.addMarker(MarkerOptions().position(location).draggable(true))
                 val titleStr = getAddress(location)
+                val editText = findViewById<View>(R.id.editTextAddress) as EditText
+                editText.setText(titleStr, TextView.BufferType.EDITABLE);
+                locationAd = location
 
             }
         })
@@ -109,8 +116,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
         val titleStr = getAddress(location)
         markerOptions.title(titleStr)
 
-        val editText = findViewById<View>(R.id.editTextAddress) as EditText
-        editText.setText(titleStr, TextView.BufferType.EDITABLE);
+
         map.addMarker(markerOptions)
     }
 

@@ -14,6 +14,8 @@ data class Ad(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "breed") val breed: String,
     @ColumnInfo(name = "address") val address: String,
+    @ColumnInfo(name = "geo_latitude") val geoLatitude: Double,
+    @ColumnInfo(name = "geo_longitude") val geoLongitude: Double,
     @ColumnInfo(name = "date") var date: Long,
     @ColumnInfo(name = "comment") val comment: String
     )

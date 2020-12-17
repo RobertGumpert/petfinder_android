@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
+import com.example.petfindermap.models.AdModel
 import com.example.petfindermap.services.AdService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
@@ -74,6 +76,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         ) {
             this.googleMap.isMyLocationEnabled = true
         }
+
+        adService.getAds().forEach{
+            val markerOptions = MarkerOptions().position(LatLng(it.GeoLatitude, it.GeoLongitude)).draggable(true)
+            if(it.typeAd == true){
+                markerOptions.
+            }
+            googleMap.addMarker(markerOptions)
+        }
+
+
+
         googleMap.getUiSettings().setZoomControlsEnabled(true)
         googleMap.setOnMarkerClickListener(this)
         setUpMap()

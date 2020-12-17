@@ -24,7 +24,7 @@ class AdService {
     }
 
 
-    fun addAd(Type: Boolean, Pet: String, Name: String, Breed: String, Address: String, Date: Long, Comment: String) {
+    fun addAd(Type: Boolean, Pet: String, Name: String, Breed: String, Address: String, Date: Long, Comment: String, GeoLatitude: Double, GeoLongitude:Double) {
         if (Pet.isEmpty() || Breed.isEmpty() || Name.isEmpty() || Address.isEmpty()) {
             throw java.lang.Exception("Non valid data.")
         }
@@ -46,6 +46,8 @@ class AdService {
                         breed = Breed,
                         address = Address,
                         date = Date,
+                        geoLatitude = GeoLatitude,
+                        geoLongitude = GeoLongitude,
                         imageUrl = "",
                         comment = Comment
                     )
@@ -70,8 +72,8 @@ class AdService {
                             it.name,
                             it.breed,
                             it.address,
-                            0.0,
-                            0.0,
+                            it.geoLatitude,
+                            it.geoLongitude,
                             Date(it.date),
                             R.drawable.dog,
                             it.comment
@@ -98,8 +100,8 @@ class AdService {
                         ad.name,
                         ad.breed,
                         ad.address,
-                        0.0,
-                        0.0,
+                        ad.geoLatitude,
+                        ad.geoLongitude,
                         Date(ad.date),
                         R.drawable.dog,
                         ad.comment
