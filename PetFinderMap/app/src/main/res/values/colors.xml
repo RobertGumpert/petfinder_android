@@ -5,5 +5,6 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorBackground">#e9e5e5</color>
     <color name="colorBlock">#FFFFFF</color>
+    <color name="colorMyBlock">#4000BCD4</color>
     <color name="colorButton">#F6D047</color>
 </resources>

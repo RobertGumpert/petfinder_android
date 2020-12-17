@@ -1,8 +1,9 @@
 package com.example.petfindermap.models
 
-class DialogModel(
-    val id: Int,
-    val name: String,
-    val avatarUrl: String,
-    val messages: List<MessageModel>
+data class DialogModel(
+    val dialog_id: Int,
+    val dialog_name: String,
+    val user_receiver_id: Int,
+    val skip_messages: Int,
+    val messages: ArrayList<MessageModel>
 )

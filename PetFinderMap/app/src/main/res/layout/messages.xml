@@ -14,16 +14,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="false"
         android:layout_alignParentEnd="false"
+        android:layout_marginTop="16dp"
         android:background="#F6D047"
+        android:onClick="goToDialogs"
         android:text="Назад"
         android:textColor="#2C2C2C"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.053"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -41,15 +41,41 @@
 
     <ListView
         android:id="@+id/lvMessages"
-        android:layout_width="355dp"
-        android:layout_height="620dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="400dp"
+        android:layout_height="600dp"
+        android:layout_marginTop="12dp"
         android:layout_weight="1"
         android:divider="@android:color/transparent"
         android:dividerHeight="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewName"></ListView>
+
+    <EditText
+        android:id="@+id/editTextMessage"
+        android:layout_width="349dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="12dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonBack"
-        app:layout_constraintVertical_bias="0.0"></ListView>
+        app:layout_constraintHorizontal_bias="0.096"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="12dp"
+        android:text=">"
+        android:onClick="sendMessage"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.583"
+        app:layout_constraintStart_toEndOf="@+id/TextName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

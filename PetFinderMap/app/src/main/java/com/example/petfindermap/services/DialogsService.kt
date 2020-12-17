@@ -1,10 +1,11 @@
 package com.example.petfindermap.services
 
 import android.content.Context
+import com.example.petfindermap.HttpManager
 import com.example.petfindermap.db.AppDatabase
 import com.example.petfindermap.db.entity.*
-import com.example.petfindermap.models.DialogModel
-import com.example.petfindermap.models.MessageModel
+import com.example.petfindermap.models.*
+import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -12,7 +13,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DialogsService {
-    var appDatabase : AppDatabase = AppDatabase.getInstance()
+    val appDatabase : AppDatabase = AppDatabase.getInstance()
+    val httpManager : HttpManager = HttpManager.getInstance()
+    val userService: UserService = UserService.getInstance()
+    val gson : Gson = Gson()
 
     companion object {
         private var instance: DialogsService? = null
@@ -24,87 +28,49 @@ class DialogsService {
         }
     }
 
-    fun getDialogsMessages(): ArrayList<DialogModel> {
-        var listDialogs: ArrayList<DialogModel> = ArrayList()
-        runBlocking {
-            val writer = GlobalScope.launch {
-                var list = appDatabase.dialogDao().getAll()
-                if (list.isEmpty()) {
-                    listDialogs = fillData()
-                    var i = 1
-                    listDialogs.forEach{
-                        appDatabase.dialogDao().insert(
-                            Dialog(
-                                i,
-                                it.name,
-                                it.avatarUrl
-                            )
-                        )
-                        i++
-                    }
-                } else {
-                    list.forEach{
-                        listDialogs.add(DialogModel(
-                            it.dialogId,
-                            it.name,
-                            it.avatarUrl,
-                            getMessagesByDialogId(it.dialogId)))
+    fun getDialogsMessages(callback: (List<DialogModel>?)-> Unit) {
+        httpManager.query("di","/api/user/dialog/get", null, listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token))) { code: Int, body: String ->
+            when (code) {
+                200 -> {
+                    val info = gson.fromJson(body, DialogsHttpModel::class.java)
+                    callback(info.dialogs)
+                }
+                401 -> {
+                    userService.refreshAccessToken {
+                        callback(null)
                     }
                 }
+                else -> {
+                    callback(null)
+                }
             }
-            writer.join()
         }
-        return listDialogs
     }
 
-    fun getMessagesByDialogId(id: Int): List<MessageModel> {
-        var list = fillData()
-        return list.find { element -> element.id == id }?.messages!!
+    fun createDialog(userId: Int, dialogName: String, callback: (Int?)-> Unit) {
+        val dialogCreateHttpModel = DialogCreateHttpModel(userId,  dialogName)
+        val postBody = gson.toJson(dialogCreateHttpModel)
+        httpManager.query("di","/api/user/dialog/create", postBody, listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token))) { code: Int, body: String ->
+            when (code) {
+                200 -> {
+                    val info = gson.fromJson(body, NumberHttpModel::class.java)
+                    callback(info.id)
+                }
+                400 -> {
+
+                }
+            }
+        }
     }
 
-    private fun fillData(): ArrayList<DialogModel> {
-        var names = arrayOf(
-            "Кузнецов Влад",
-            "Максин Илья",
-            "Шарафутдинова Виктория",
-            "Аникьев Данил"
-        )
-        var messages = arrayOf(
-            "Привет!",
-            "Как дела?",
-            "Отлично",
-            "Чем занимаешься?",
-            "Отдыхаю",
-            "А ты?",
-            "Нормас",
-            "Живем..."
-        )
-        var listDialogs = ArrayList<DialogModel>()
-        for (i in 0..(names.size - 1)) {
-            var messages = arrayListOf(
-                MessageModel(
-                    messages[i * 2],
-                    (i * 2) % 2 == 0,
-                    Date(),
-                    (i * 2) % 2 == 0
-                ),
-                MessageModel(
-                    messages[i * 2 + 1],
-                    (i * 2 + 1) % 2 == 0,
-                    Date(),
-                    (i * 2 + 1) % 2 == 0
-                )
-                )
-
-            listDialogs.add(
-                DialogModel(
-                    i + 1,
-                    names[i],
-                    "",
-                    messages
-                    )
-            )
+    fun sendMessage(dialogId: Int, text: String, callback: (MessageHttpModel?)-> Unit) {
+        val sendMessageHttpModel = SendMessageHttpModel(dialogId,  text)
+        val postBody = gson.toJson(sendMessageHttpModel)
+        httpManager.query("di","/api/user/message/send", postBody, listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token))) { code: Int, body: String ->
+            if (code == 200) {
+                val info = gson.fromJson(body, MessageHttpModel::class.java)
+                callback(info)
+            }
         }
-        return listDialogs
     }
 }

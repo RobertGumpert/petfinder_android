@@ -8,11 +8,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
+import com.example.petfindermap.services.DialogsService
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
 class AdActivity : AppCompatActivity() {
-    private var adService: AdService = AdService.getInstance()
+    private val adService: AdService = AdService.getInstance()
+    private val dialogsService: DialogsService = DialogsService.getInstance()
 
     private var adId: Long = -1
     private var isMine: Boolean = false
@@ -60,7 +62,7 @@ class AdActivity : AppCompatActivity() {
 
         if (isMine) {
             val buttonWrite: Button = findViewById(R.id.buttonWrite)
-            buttonWrite.visibility = View.INVISIBLE
+            buttonWrite.visibility = View.VISIBLE
             val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
             buttonComplaint.visibility = View.INVISIBLE
 
@@ -101,5 +103,18 @@ class AdActivity : AppCompatActivity() {
         val intent = Intent(this, ComplaintActivity::class.java)
         intent.putExtra("adId", adId.toString())
         startActivity(intent)
+    }
+
+    fun goToDialog (view: View) {
+        //if (isMine) return
+        val ad = adService.getAd(adId)
+        if (ad == null) return
+        dialogsService.createDialog(10002, ad.userName) {
+            if (it != null) {
+                val intent = Intent(this, MessagesActivity::class.java)
+                intent.putExtra("dialog_id", it)
+                startActivity(intent)
+            }
+        }
     }
 }

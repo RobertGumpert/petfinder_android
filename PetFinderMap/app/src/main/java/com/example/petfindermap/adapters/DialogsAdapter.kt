@@ -9,7 +9,7 @@ import com.example.petfindermap.R
 import com.example.petfindermap.models.DialogModel
 
 
-class DialogsAdapter(val context: Context?, val objects: ArrayList<DialogModel>) : BaseAdapter() {
+class DialogsAdapter(val context: Context?, val objects: List<DialogModel>) : BaseAdapter() {
     var lInflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getCount(): Int {
@@ -31,13 +31,9 @@ class DialogsAdapter(val context: Context?, val objects: ArrayList<DialogModel>)
         }
         val p: DialogModel = getDialog(position)
 
-        (view?.findViewById(R.id.tvName) as TextView).text = p.name
-        var image = 0
-        if (p.avatarUrl == "") {
-            image = R.drawable.ic_baseline_account_circle_24
-        }
-        (view.findViewById(R.id.ivUserImage) as ImageView).setImageResource(image)
-        view.tag = p.id
+        (view?.findViewById(R.id.tvName) as TextView).text = p.dialog_name
+        (view.findViewById(R.id.ivUserImage) as ImageView).setImageResource(R.drawable.ic_baseline_account_circle_24)
+        view.tag = p.dialog_id
         return view
     }
 

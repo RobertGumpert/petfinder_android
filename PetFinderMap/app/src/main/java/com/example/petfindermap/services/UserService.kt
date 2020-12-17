@@ -38,7 +38,7 @@ class UserService {
         }
         val userSignUpData = UserSignUpHttpModel(telephone, name, email, password)
         val postBody = gson.toJson(userSignUpData)
-        httpManager.query("/api/user/register", postBody, listOf()) { code: Int, body: String ->
+        httpManager.query("au","/api/user/register", postBody, listOf()) { code: Int, body: String ->
             callback(code, body)
         }
     }
@@ -54,7 +54,7 @@ class UserService {
         }
         val userSignInData = UserSignInHttpModel(telephone,  password)
         val postBody = gson.toJson(userSignInData)
-        httpManager.query("/api/user/authorized", postBody, listOf()) { code: Int, body: String ->
+        httpManager.query("au","/api/user/authorized", postBody, listOf()) { code: Int, body: String ->
             if (code == 200) {
                 val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
                 info.user.access_token = info.token
@@ -130,6 +130,7 @@ class UserService {
                         access_token = users[0].accessToken
                     )
                     httpManager.query(
+                        "au",
                         "/api/user/access",
                         null,
                         listOf(Pair("Authorization", "Bearer " + user!!.access_token))
@@ -164,11 +165,13 @@ class UserService {
     }
 
     fun refreshAccessToken(callback: ()-> Unit) {
-        httpManager.query("/api/user/access/update", null, listOf(Pair("Authorization", "Bearer " + user!!.access_token))) { code: Int, body: String ->
-            val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
-            info.user.access_token = info.token
-            createOrUpdateUserData(info.user) {
-                callback()
+        httpManager.query("au","/api/user/access/update", null, listOf(Pair("Authorization", "Bearer " + user!!.access_token))) { code: Int, body: String ->
+            if (code == 200) {
+                val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
+                info.user.access_token = info.token
+                createOrUpdateUserData(info.user) {
+                    callback()
+                }
             }
         }
     }

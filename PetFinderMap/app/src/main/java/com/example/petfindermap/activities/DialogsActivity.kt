@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.DialogsAdapter
 import com.example.petfindermap.dialogs.DialogRemoveDialog
+import com.example.petfindermap.models.DialogModel
 import com.example.petfindermap.services.DialogsService
 
 class DialogsActivity : AppCompatActivity() {
@@ -28,9 +29,15 @@ class DialogsActivity : AppCompatActivity() {
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        dialogsAdapter = DialogsAdapter(this, dialogsService.getDialogsMessages())
-        val lvMain: ListView = findViewById(R.id.lvDialogs)
-        lvMain.adapter = dialogsAdapter
+        dialogsService.getDialogsMessages() { dialogs: List<DialogModel>? ->
+            if (dialogs != null) {
+                runOnUiThread {
+                    dialogsAdapter = DialogsAdapter(this, dialogs)
+                    val lvMain: ListView = findViewById(R.id.lvDialogs)
+                    lvMain.adapter = dialogsAdapter
+                }
+            }
+        }
     }
 
     fun menuSlider(view: View) {
@@ -67,7 +74,7 @@ class DialogsActivity : AppCompatActivity() {
 
     fun dialogItemPress (view: View?) {
         val intent = Intent(this, MessagesActivity::class.java)
-        intent.putExtra("dialogId", view?.tag.toString())
+        intent.putExtra("dialog_id", view?.tag.toString())
         startActivity(intent)
     }
 }

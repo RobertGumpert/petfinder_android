@@ -1,6 +1,5 @@
 package com.example.petfindermap.services
 
-import android.content.Context
 import com.example.petfindermap.R
 import com.example.petfindermap.db.AppDatabase
 import com.example.petfindermap.db.entity.Ad

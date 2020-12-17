@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
 import android.widget.TextView
 import com.example.petfindermap.R
-import com.example.petfindermap.models.DialogModel
 import com.example.petfindermap.models.MessageModel
 
-class MessagesAdapter(val context: Context?, val objects: List<MessageModel>) : BaseAdapter() {
+class MessagesAdapter(val context: Context?, val objects: ArrayList<MessageModel>, val user_id: Int) : BaseAdapter() {
     var lInflater: LayoutInflater? = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater?
 
     override fun getCount(): Int {
@@ -32,8 +30,8 @@ class MessagesAdapter(val context: Context?, val objects: List<MessageModel>) : 
         var view: View? = convertView
         if (view == null) {
             var messageType = R.layout.messages_item;
-            if (p.isMine) {
-                messageType = R.layout.messages_item;
+            if (p.user_id == user_id) {
+                messageType = R.layout.my_messages_item;
             }
             view = lInflater?.inflate(messageType, parent, false)
         }
@@ -46,5 +44,10 @@ class MessagesAdapter(val context: Context?, val objects: List<MessageModel>) : 
 
     private fun getMessage(position: Int): MessageModel {
         return getItem(position) as MessageModel
+    }
+
+    fun addItem(item: MessageModel) {
+        objects.add(item)
+        notifyDataSetChanged()
     }
 }
