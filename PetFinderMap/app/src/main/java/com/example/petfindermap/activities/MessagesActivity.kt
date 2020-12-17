@@ -28,7 +28,6 @@ class MessagesActivity : AppCompatActivity() {
         dialogId = intent.getStringExtra("dialog_id").toInt()
         dialogsService.getDialogsMessages() {
             val dialog = it?.find { element -> element.dialog_id == dialogId }
-
             if (dialog != null) {
                 val textViewName: TextView = findViewById(R.id.textViewName)
                 var dialogName = ""
@@ -61,7 +60,7 @@ class MessagesActivity : AppCompatActivity() {
                         MessageModel(
                             it.message_id,
                             it.dialog_id,
-                            it.user_id,
+                            it.user_receiver_id,
                             it.user_name,
                             it.text,
                             it.date_create

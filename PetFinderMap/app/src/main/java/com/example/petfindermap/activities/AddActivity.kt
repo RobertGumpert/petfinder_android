@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
+import com.example.petfindermap.models.AdCreateHttpModel
 import com.example.petfindermap.services.AdService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -33,7 +34,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
     private var adService: AdService = AdService.getInstance()
     private lateinit var map: GoogleMap
     private lateinit var deviceCurrentLocation: Location
-    private lateinit var locationAd: LatLng
+    private var locationAd: LatLng? = null
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,35 +56,34 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
 
     private fun addAd() {
         buttonAdd.setOnClickListener {
-            var type = false
-            if (toggleButtonType.text == "Потерян") type = true
-            val pet = editTextPet.text.toString()
-            val name = editTextName.text.toString()
-            val breed = editTextBreed.text.toString()
-            val address = editTextAddress.text.toString()
-            val date = calendarView.date
-            val comment = editTextComment.text.toString()
-            try {
-                adService.addAd(
-                    Type = type,
-                    Pet = pet,
-                    Name = name,
-                    Breed = breed,
-                    Address = address,
-                    GeoLatitude = locationAd.latitude,
-                    GeoLongitude = locationAd.longitude,
-                    Date = date,
-                    Comment = comment
-                )
-            } catch (ex: java.lang.Exception) {
-                textView.text = "Ошибка добавления"
+            var type = 2
+            if (toggleButtonType.text == "Потерян") type = 1
+            val animal_type = editTextType.text.toString()
+            val animal_breed = editTextBreed.text.toString()
+            val comment_text = editTextComment.text.toString()
+
+            if (animal_type.isEmpty() || animal_breed.isEmpty() || locationAd == null) {
+                textView.text = "Заполните поля"
                 return@setOnClickListener
             }
-            finish()
-            val toMain = Intent(this, MapsActivity::class.java)
-            startActivity(toMain)
-        }
+            val adCreateHttpModel = AdCreateHttpModel(
+                type,
+                animal_type,
+                animal_breed,
+                locationAd!!.latitude,
+                locationAd!!.longitude,
+                comment_text
+            )
 
+            adService.addAd(adCreateHttpModel) {
+                if (it != null) {
+                    runOnUiThread {
+                        val toMain = Intent(this, MapsActivity::class.java)
+                        startActivity(toMain)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -94,7 +94,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 val location = LatLng(latlng.latitude, latlng.longitude)
                 map.clear()
                 map.addMarker(MarkerOptions().position(location).draggable(true))
-                val titleStr = getAddress(location)
+                val titleStr = adService.getAddress(location)
                 val editText = findViewById<View>(R.id.editTextAddress) as EditText
                 editText.setText(titleStr, TextView.BufferType.EDITABLE);
                 locationAd = location
@@ -113,45 +113,18 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
 
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location).draggable(true)
-        val titleStr = getAddress(location)
+        val titleStr = adService.getAddress(location)
         markerOptions.title(titleStr)
 
 
         map.addMarker(markerOptions)
     }
 
-    private fun getAddress(latLng: LatLng): String {
-        val geocoder = Geocoder(this)
-        val addresses: List<Address>?
-        val address: Address?
-        var addressText = ""
 
-        try {
-            addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            if (null != addresses && !addresses.isEmpty()) {
-                address = addresses[0]
-                if(address.locality != null){
-                    addressText += address.locality
-                }
-                if(address.thoroughfare != null){
-                    addressText += ", " + address.thoroughfare
-                }
-
-                if(address.subThoroughfare != null){
-                    addressText += ", " + address.subThoroughfare
-                }
-            }
-        } catch (e: IOException) {
-            Log.e("AddActivity", e.localizedMessage)
-        }
-
-        return addressText
-    }
 
     override fun onMyLocationButtonClick(): Boolean {
         map.clear()
         this.deviceCurrentLocation = map.myLocation
-        //findAdvertsInArea()
         return false
     }
 
@@ -183,6 +156,4 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             }
         }
     }
-
-
 }

@@ -8,15 +8,19 @@ import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
+import com.example.petfindermap.adapters.DialogsAdapter
+import com.example.petfindermap.models.AdModel
 import com.example.petfindermap.services.AdService
 
 class MyAdsActivity : AppCompatActivity() {
-    lateinit var listAdapter: AdsAdapter
+    private lateinit var listAdapter: AdsAdapter
     private var adService: AdService = AdService.getInstance()
 
     private var flagOpenMenu: Boolean = false
     private lateinit var viewMenu: View
     private lateinit var buttonMenu: Button
+
+    private lateinit var ads: ArrayList<AdModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +31,21 @@ class MyAdsActivity : AppCompatActivity() {
         viewMenu.visibility = View.INVISIBLE
         buttonMenu = findViewById(R.id.buttonMenu)
 
-        listAdapter = AdsAdapter(this, adService.getAds())
+        var adList: ArrayList<AdModel> = arrayListOf()
+        adService.getMyAds() { adsHttpModel ->
+            if (adsHttpModel != null) {
+                adList.addAll(adsHttpModel.lost.list)
+                adList.addAll(adsHttpModel.found.list)
+                ads = arrayListOf()
+                ads.addAll(adList.sortedWith(compareBy { it.date_create }))
 
-        val lvMyList: ListView = findViewById(R.id.lvAds) as ListView
-        lvMyList.setAdapter(listAdapter)
+                runOnUiThread {
+                    listAdapter = AdsAdapter(this, ads)
+                    val lvMyList: ListView = findViewById(R.id.lvAds) as ListView
+                    lvMyList.setAdapter(listAdapter)
+                }
+            }
+        }
     }
 
     fun menuSlider(view: View) {
@@ -58,8 +73,10 @@ class MyAdsActivity : AppCompatActivity() {
     }
 
     fun adItemPress (view: View?) {
+        val ad = ads.find { it.ad_id == view?.tag}
+        if (ad == null) return
+        adService.saveAd(ad)
         val intent = Intent(this, AdActivity::class.java)
-        intent.putExtra("adId", view?.tag.toString())
         intent.putExtra("isMine", (true).toString())
         startActivity(intent)
     }

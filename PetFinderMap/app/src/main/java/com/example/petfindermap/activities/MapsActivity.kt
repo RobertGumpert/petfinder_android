@@ -14,7 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
 import com.example.petfindermap.adapters.AdsAdapter
+import com.example.petfindermap.models.AdModel
+import com.example.petfindermap.models.AdsLocationHttpModel
 import com.example.petfindermap.services.AdService
+import com.example.petfindermap.services.UserService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,6 +35,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
 {
     private var adService: AdService = AdService.getInstance()
+    private var userService: UserService = UserService.getInstance()
+
+    private lateinit var ads: ArrayList<AdModel>
 
     private lateinit var googleMap: GoogleMap
     private lateinit var deviceCurrentLocation: Location
@@ -50,6 +56,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         super.onCreate(savedInstanceState)
         super.getSupportActionBar()?.hide()
         setContentView(R.layout.activity_maps)
+
+        adService.geocoderContext = this
 
         viewMenu = findViewById(R.id.menu_slide)
         viewMenu.visibility = View.INVISIBLE
@@ -77,19 +85,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             this.googleMap.isMyLocationEnabled = true
         }
 
-        adService.getAds().forEach{
-            val markerOptions = MarkerOptions().position(LatLng(it.GeoLatitude, it.GeoLongitude))
-            if(it.typeAd == true){
-                markerOptions.title("Потерян " + it.pet + " " + it.name)
-            }
-            else{
-                markerOptions.title("Найден " + it.pet + " " + it.name)
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-            }
-            markerAd = this.googleMap.addMarker(markerOptions)
-            markerAd.setTag(it.id)
-        }
+        val adList: ArrayList<AdModel> = arrayListOf()
+        if (userService.user == null) return
+        adService.getAds(AdsLocationHttpModel(
+            userService.user!!.user_id,
+            true,
+            0.0,
+            0.0
+        )) { adsHttpModel ->
+            if (adsHttpModel != null) {
+                adList.addAll(adsHttpModel.lost.list)
+                adList.addAll(adsHttpModel.found.list)
+                ads = arrayListOf()
+                ads.addAll(adList.sortedWith(compareBy { it.date_create }))
 
+                runOnUiThread {
+                    ads.forEach{
+                        val markerOptions = MarkerOptions().position(LatLng(it.geo_latitude, it.geo_longitude))
+                        if(it.ad_type == 1){
+                            markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
+                        }
+                        else{
+                            markerOptions.title("Найден " + it.animal_type + " " + it.animal_breed)
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                        }
+                        markerAd = this.googleMap.addMarker(markerOptions)
+                        markerAd.setTag(it.ad_id)
+                    }
+                }
+            }
+        }
 
 //        this.googleMap.setOnMarkerClickListener ( object :GoogleMap.OnMarkerClickListener {
 //            override fun onMarkerClick(marker: Marker): Boolean {
@@ -147,11 +172,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             buttonAddAd.visibility = View.VISIBLE
         } else {
             viewListAdverts.visibility = View.VISIBLE
-            val adapterListAdverts = AdsAdapter(
-                this,
-                adService.getAds()
-            )
-            viewListAdverts.adapter = adapterListAdverts
+
+            val adList: ArrayList<AdModel> = arrayListOf()
+            if (userService.user == null) return
+            adService.getAds(AdsLocationHttpModel(
+                userService.user!!.user_id,
+                true,
+                0.0,
+                0.0
+            )) { adsHttpModel ->
+                if (adsHttpModel != null) {
+                    adList.addAll(adsHttpModel.lost.list)
+                    adList.addAll(adsHttpModel.found.list)
+                    ads = arrayListOf()
+                    ads.addAll(adList.sortedWith(compareBy { it.date_create }))
+
+                    runOnUiThread {
+                        val adapterListAdverts = AdsAdapter(this, ads)
+                        viewListAdverts.adapter = adapterListAdverts
+                    }
+                }
+            }
             buttonListAdverts.text = "Скрыть"
             buttonMenu.visibility = View.INVISIBLE
             buttonAddAd.visibility = View.INVISIBLE
@@ -206,7 +247,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         startActivity(addAd)
     }
 
-    fun adItemPress(view: View?) {
+    fun adItemPress (view: View?) {
+        val ad = ads.find { it.ad_id == view?.tag}
+        if (ad == null) return
+        adService.saveAd(ad)
         val intent = Intent(this, AdActivity::class.java)
         intent.putExtra("adId", view?.tag.toString())
         intent.putExtra("isMine", (false).toString())
@@ -240,6 +284,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             }
         }
     }
-
 }
 

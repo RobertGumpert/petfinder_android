@@ -83,7 +83,7 @@
                 android:textSize="16sp" />
 
             <EditText
-                android:id="@+id/editTextPet"
+                android:id="@+id/editTextType"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="8dp"
@@ -91,24 +91,24 @@
                 android:gravity="start"
                 android:inputType="text" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="Кличка"
-                android:layout_marginTop="16dp"
-                android:textColor="#000000"
-                android:textSize="16sp" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView7"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="start"-->
+<!--                android:text="Кличка"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:textColor="#000000"-->
+<!--                android:textSize="16sp" />-->
 
-            <EditText
-                android:id="@+id/editTextName"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="8dp"
-                android:background="#FFFFFF"
-                android:gravity="start"
-                android:inputType="text" />
+<!--            <EditText-->
+<!--                android:id="@+id/editTextName"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:background="#FFFFFF"-->
+<!--                android:gravity="start"-->
+<!--                android:inputType="text" />-->
 
             <TextView
                 android:id="@+id/textView4"
@@ -158,20 +158,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="246dp" />
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:text="Дата"
-                android:layout_marginTop="16dp"
-                android:textColor="#000000"
-                android:textSize="16sp" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView5"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="start"-->
+<!--                android:text="Дата"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:textColor="#000000"-->
+<!--                android:textSize="16sp" />-->
 
-            <CalendarView
-                android:id="@+id/calendarView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+<!--            <CalendarView-->
+<!--                android:id="@+id/calendarView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
 
             <TextView
                 android:id="@+id/textView6"

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
 import com.example.petfindermap.services.DialogsService
+import com.google.android.gms.maps.model.LatLng
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
@@ -24,11 +25,9 @@ class AdActivity : AppCompatActivity() {
         setContentView(R.layout.ad)
         super.getSupportActionBar()?.hide()
 
-        val adId = intent.getStringExtra("adId").toLong()
-        this.adId = adId
         val isMine = intent.getStringExtra("isMine").toBoolean()
         this.isMine = isMine
-        val ad = adService.getAd(adId)
+        val ad = adService.getAd()
         if (ad == null) {
             val intent = Intent(this, MapsActivity::class.java)
             startActivity(intent)
@@ -37,32 +36,32 @@ class AdActivity : AppCompatActivity() {
             val textViewType: TextView  = findViewById(R.id.textViewType)
             var typeText = "Потерян!"
             var typeTextDate = "Потерялся: "
-            if (!ad.typeAd)  {
+            if (ad.ad_type == 2)  {
                 typeText = "Найден!"
                 typeTextDate = "Нашелся: "
             }
             textViewType.text = typeText
 
             val textViewPet: TextView  = findViewById(R.id.textViewPet)
-            textViewPet.text = ad.pet + ", " + ad.name + ", " + ad.breed
+            textViewPet.text = ad.animal_type + ", " + ad.animal_breed
 
             val textViewName: TextView  = findViewById(R.id.textViewName)
-            textViewName.text = "Владелец: " + ad.userName
+            textViewName.text = "Владелец: " + ad.ad_owner_name
 
             val textViewDate: TextView  = findViewById(R.id.textViewDate)
             val format = SimpleDateFormat("dd/MM/yyy")
-            textViewDate.text = typeTextDate + format.format(ad.date)
+            textViewDate.text = typeTextDate + format.format(ad.date_create)
 
             val textViewAddress: TextView  = findViewById(R.id.textViewAddress)
-            textViewAddress.text = ad.address
+            textViewAddress.text = adService.getAddress(LatLng(ad.geo_latitude, ad.geo_longitude))
 
             val textViewComment: TextView  = findViewById(R.id.textViewComment)
-            textViewComment.text = ad.comment
+            textViewComment.text = ad.comment_text
         }
 
         if (isMine) {
             val buttonWrite: Button = findViewById(R.id.buttonWrite)
-            buttonWrite.visibility = View.VISIBLE
+            buttonWrite.visibility = View.INVISIBLE
             val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
             buttonComplaint.visibility = View.INVISIBLE
 
@@ -75,7 +74,8 @@ class AdActivity : AppCompatActivity() {
             val buttonWrite: Button = findViewById(R.id.buttonWrite)
             buttonWrite.visibility = View.VISIBLE
             val buttonComplaint: Button = findViewById(R.id.buttonComplaint)
-            buttonComplaint.visibility = View.VISIBLE
+            // do with complaints adding
+            buttonComplaint.visibility = View.INVISIBLE
 
             val buttonUpdate: Button = findViewById(R.id.buttonUpdate)
             buttonUpdate.visibility = View.INVISIBLE
@@ -106,10 +106,10 @@ class AdActivity : AppCompatActivity() {
     }
 
     fun goToDialog (view: View) {
-        //if (isMine) return
-        val ad = adService.getAd(adId)
+        if (isMine) return
+        val ad = adService.getAd()
         if (ad == null) return
-        dialogsService.createDialog(10002, ad.userName) {
+        dialogsService.createDialog(ad.ad_owner_id, ad.ad_owner_name) {
             if (it != null) {
                 val intent = Intent(this, MessagesActivity::class.java)
                 intent.putExtra("dialog_id", it)
