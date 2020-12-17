@@ -8,9 +8,8 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ListView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
@@ -23,14 +22,15 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import kotlin.jvm.JvmName as JvmName1
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
-    GoogleMap.OnMarkerClickListener {
+    GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener
+{
     private var adService: AdService = AdService.getInstance()
 
     private lateinit var googleMap: GoogleMap
@@ -68,8 +68,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     }
 
 
-
-
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         this.googleMap.setOnMyLocationButtonClickListener(this)
@@ -86,30 +84,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             }
             else{
                 markerOptions.title("Найден " + it.pet + " " + it.name)
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
             }
             markerAd = this.googleMap.addMarker(markerOptions)
             markerAd.setTag(it.id)
         }
 
 
-        this.googleMap.setOnMarkerClickListener ( object :GoogleMap.OnMarkerClickListener {
-            override fun onMarkerClick(marker: Marker): Boolean {
-//            if (marker.equals(markerAd)) {
-//                val intent = Intent(this, AdActivity::class.java)
-//                startActivity(intent)
+//        this.googleMap.setOnMarkerClickListener ( object :GoogleMap.OnMarkerClickListener {
+//            override fun onMarkerClick(marker: Marker): Boolean {
+////            if (marker.equals(markerAd)) {
+////                val intent = Intent(this, AdActivity::class.java)
+////                startActivity(intent)
+////            }
+////            val intent = Intent(this, AdActivity::class.java)
+////            startActivity(intent)
+//                return true
 //            }
-//            val intent = Intent(this, AdActivity::class.java)
-//            startActivity(intent)
-                return true
-            }
-        })
+//        })
 
         this.googleMap.getUiSettings().setZoomControlsEnabled(true)
-        this.googleMap.setOnMarkerClickListener(this)
+        this.googleMap.setOnInfoWindowClickListener(this)
         setUpMap()
     }
 
-
+    override fun onInfoWindowClick(marker: Marker?) {
+        val intent = Intent(this, AdActivity::class.java)
+        intent.putExtra("adId", marker?.tag.toString() )
+        intent.putExtra("isMine", (false).toString())
+        startActivity(intent)
+    }
 
 
 
@@ -236,5 +240,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             }
         }
     }
+
 }
 
