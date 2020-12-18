@@ -165,13 +165,16 @@ class UserService {
 
     fun refreshAccessToken(callback: ()-> Unit) {
         httpManager.query("au","/api/user/access/update", null, listOf(Pair("Authorization", "Bearer " + user!!.access_token))) { code: Int, body: String ->
-            user = null
             if (code == 200) {
                 val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
                 info.user.access_token = info.token
                 createOrUpdateUserData(info.user) {
                     callback()
                 }
+            }
+            else{
+                user = null
+                callback()
             }
         }
     }
