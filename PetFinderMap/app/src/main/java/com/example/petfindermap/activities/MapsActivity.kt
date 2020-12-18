@@ -118,18 +118,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             }
         }
 
-//        this.googleMap.setOnMarkerClickListener ( object :GoogleMap.OnMarkerClickListener {
-//            override fun onMarkerClick(marker: Marker): Boolean {
-////            if (marker.equals(markerAd)) {
-////                val intent = Intent(this, AdActivity::class.java)
-////                startActivity(intent)
-////            }
-////            val intent = Intent(this, AdActivity::class.java)
-////            startActivity(intent)
-//                return true
-//            }
-//        })
-
         this.googleMap.getUiSettings().setZoomControlsEnabled(true)
         this.googleMap.setOnInfoWindowClickListener(this)
         setUpMap()
@@ -149,7 +137,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     override fun onMyLocationButtonClick(): Boolean {
         googleMap.clear()
         this.deviceCurrentLocation = googleMap.myLocation
-        //findAdvertsInArea()
         return false
     }
 

@@ -1,6 +1,5 @@
 package com.example.petfindermap.services
 
-import android.util.Log
 import com.example.petfindermap.HttpManager
 import com.example.petfindermap.db.AppDatabase
 import com.example.petfindermap.db.entity.User
@@ -121,7 +120,7 @@ class UserService {
             val writer = GlobalScope.launch {
                 val users = appDatabase.userDao().getAll()
                 if (users.isNotEmpty()) {
-                    user = UserModel(
+                    val userData = UserModel(
                         user_id = users[0].userId,
                         telephone = users[0].telephone,
                         email = users[0].email,
@@ -133,11 +132,11 @@ class UserService {
                         "au",
                         "/api/user/access",
                         null,
-                        listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+                        listOf(Pair("Authorization", "Bearer " + userData.access_token))
                     ) { code: Int, body: String ->
                         if (code == 200) {
                             val info = gson.fromJson(body, UserModel::class.java)
-                            info.access_token = user!!.access_token
+                            info.access_token = userData.access_token
                             createOrUpdateUserData(info) {
                                 callback()
                             }
@@ -150,7 +149,6 @@ class UserService {
                                 }
                             }
                             else {
-                                user = null
                                 callback()
                             }
                         }
