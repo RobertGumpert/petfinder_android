@@ -120,7 +120,7 @@ class UserService {
             val writer = GlobalScope.launch {
                 val users = appDatabase.userDao().getAll()
                 if (users.isNotEmpty()) {
-                    val userData = UserModel(
+                    user = UserModel(
                         user_id = users[0].userId,
                         telephone = users[0].telephone,
                         email = users[0].email,
@@ -132,11 +132,11 @@ class UserService {
                         "au",
                         "/api/user/access",
                         null,
-                        listOf(Pair("Authorization", "Bearer " + userData.access_token))
+                        listOf(Pair("Authorization", "Bearer " + user!!.access_token))
                     ) { code: Int, body: String ->
                         if (code == 200) {
                             val info = gson.fromJson(body, UserModel::class.java)
-                            info.access_token = userData.access_token
+                            info.access_token = user!!.access_token
                             createOrUpdateUserData(info) {
                                 callback()
                             }
@@ -149,6 +149,7 @@ class UserService {
                                 }
                             }
                             else {
+                                user = null
                                 callback()
                             }
                         }
@@ -164,6 +165,7 @@ class UserService {
 
     fun refreshAccessToken(callback: ()-> Unit) {
         httpManager.query("au","/api/user/access/update", null, listOf(Pair("Authorization", "Bearer " + user!!.access_token))) { code: Int, body: String ->
+            user = null
             if (code == 200) {
                 val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
                 info.user.access_token = info.token
