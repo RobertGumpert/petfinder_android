@@ -29,16 +29,18 @@ class MessagesActivity : AppCompatActivity() {
         dialogsService.getDialogsMessages() {
             val dialog = it?.find { element -> element.dialog_id == dialogId }
             if (dialog != null) {
-                val textViewName: TextView = findViewById(R.id.textViewName)
-                var dialogName = ""
-                if (dialog.dialog_name.length > 16) {
-                    val dialogNameArgs = dialog.dialog_name.split(' ')
-                    dialogName = dialogNameArgs[0] + " " + dialogNameArgs[1][0] + "."
+                runOnUiThread {
+                    val textViewName: TextView = findViewById(R.id.textViewName)
+                    var dialogName = ""
+                    if (dialog.dialog_name.length > 16) {
+                        val dialogNameArgs = dialog.dialog_name.split(' ')
+                        dialogName = dialogNameArgs[0] + " " + dialogNameArgs[1][0] + "."
+                    }
+                    textViewName.text = dialogName
+                    messagesAdapter = MessagesAdapter(this, dialog.messages, dialog.user_receiver_id)
+                    val lvMain: ListView = findViewById(R.id.lvMessages)
+                    lvMain.adapter = messagesAdapter
                 }
-                textViewName.text = dialogName
-                messagesAdapter = MessagesAdapter(this, dialog.messages, dialog.user_receiver_id)
-                val lvMain: ListView = findViewById(R.id.lvMessages)
-                lvMain.adapter = messagesAdapter
             }
         }
     }
