@@ -51,6 +51,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_gravity="start"
                 android:background="@color/colorButton"
+                android:onClick="toCamera"
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
             <ImageButton
@@ -60,7 +61,14 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="-40dp"
                 android:background="@color/colorButton"
+                android:onClick="toGallery"
                 app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+            <ImageView
+                android:id="@+id/imageViewPet"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:srcCompat="@drawable/dog" />
 
             <ToggleButton
                 android:id="@+id/toggleButtonType"
@@ -210,6 +218,7 @@
                 android:layout_marginTop="16dp"
                 android:textColor="#000000"
                 android:textSize="16sp" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

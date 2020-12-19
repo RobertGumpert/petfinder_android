@@ -3,13 +3,18 @@ package com.example.petfindermap.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Camera
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.content.ContentValues
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -24,17 +29,27 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.add_ad.*
-import java.io.IOException
+import java.io.FileNotFoundException
+import java.io.InputStream
 import java.util.*
 
 
 class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
-    GoogleMap.OnMarkerClickListener {
+    GoogleMap.OnMarkerClickListener{
 
     private var adService: AdService = AdService.getInstance()
     private lateinit var map: GoogleMap
     private lateinit var deviceCurrentLocation: Location
     private var locationAd: LatLng? = null
+    private val Pick_image_g = 1
+    private val Pick_image_c = 2
+    private var imageViewPet: ImageView? = null
+    private var imageButtonCamera: ImageView? = null
+    var camera: Camera? = null
+    var image_uri: Uri? = null
+
+
+
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,11 +57,66 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
         setContentView(R.layout.add_ad)
         super.getSupportActionBar()?.hide()
         addAd()
+        imageViewPet = findViewById(R.id.imageViewPet);
+        imageButtonCamera = findViewById(R.id.imageButtonCamera);
+
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+    }
+
+    fun toGallery(view: View?) {
+        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(
+            Intent.createChooser(photoPickerIntent, "Select Picture"),
+            Pick_image_g
+        );
+    }
+
+    fun toCamera(view: View?) {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+        image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
+
+        startActivityForResult(intent, Pick_image_c)
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, imageReturnedIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        when(requestCode){
+            Pick_image_g -> {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        val imageUri = imageReturnedIntent!!.data as Uri
+                        val imageStream =
+                            getContentResolver().openInputStream(imageUri) as InputStream
+                        val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
+                        imageViewPet?.setImageBitmap(selectedImage);
+
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            Pick_image_c -> {
+                if (resultCode == RESULT_OK) {
+                    val imageStream =
+                        image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
+                    val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
+                    imageViewPet?.setImageBitmap(selectedImage)
+
+                }
+            }
+        }
+
     }
 
     fun toMain(view: View?) {
@@ -89,8 +159,8 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
-            override fun onMapClick(latlng :LatLng) {
+        map.setOnMapClickListener(object : GoogleMap.OnMapClickListener {
+            override fun onMapClick(latlng: LatLng) {
                 val location = LatLng(latlng.latitude, latlng.longitude)
                 map.clear()
                 map.addMarker(MarkerOptions().position(location).draggable(true))
@@ -156,4 +226,6 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             }
         }
     }
+
+
 }

@@ -10,9 +10,9 @@ class HttpManager {
     private val client = OkHttpClient()
     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
     private val url: Map<String, String> = mapOf(
-        "au" to "http://192.168.1.67:5490",
-        "ad" to "http://192.168.1.67:5492",
-        "di" to "http://192.168.1.67:5493"
+        "au" to "http://192.168.1.98:5490",
+        "ad" to "http://192.168.1.98:5492",
+        "di" to "http://192.168.1.98:5493"
     )
 
     companion object {
