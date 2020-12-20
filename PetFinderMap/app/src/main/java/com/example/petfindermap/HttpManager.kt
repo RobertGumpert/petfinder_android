@@ -1,6 +1,7 @@
 package com.example.petfindermap
 
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -10,6 +11,9 @@ import java.net.URI
 
 
 class HttpManager {
+
+    val IP_ADDR_DEVICE = "192.168.1.67"
+
     private val client = OkHttpClient()
     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
     private val url: Map<String, String> = mapOf(
@@ -62,7 +66,6 @@ class HttpManager {
         serviceName: String,
         route: String,
         postBody: String,
-        fileName: String?,
         filePath: String?,
         postHeaders: List<Pair<String, String>>,
         callback: (Int, String) -> Unit
@@ -73,8 +76,9 @@ class HttpManager {
             .setType(MultipartBody.FORM)
             .addFormDataPart("json", postBody)
         if (filePath != null) {
-            requestBody.addFormDataPart("file", "file",
-                File(filePath).asRequestBody("image/png".toMediaTypeOrNull()))
+            val file = File(filePath)
+            val fileReq = file.asRequestBody("image/jpeg".toMediaType())
+            requestBody.addFormDataPart("file", filePath, fileReq)
         }
         request = request.post(requestBody.build())
         postHeaders.forEach {

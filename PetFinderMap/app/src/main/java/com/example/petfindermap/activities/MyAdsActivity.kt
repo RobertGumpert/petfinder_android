@@ -69,6 +69,10 @@ class MyAdsActivity : AppCompatActivity() {
                 val dialogs = Intent(this, DialogsActivity::class.java)
                 startActivity(dialogs)
             }
+            R.id.textViewMenuPersonalArea -> {
+                val personalArea = Intent(this, PersonalAreaActivity::class.java)
+                startActivity(personalArea)
+            }
         }
     }
 

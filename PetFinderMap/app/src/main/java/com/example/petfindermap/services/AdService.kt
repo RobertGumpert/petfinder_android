@@ -45,7 +45,6 @@ class AdService {
             "ad",
             "/api/advert/user/add",
             postBody,
-            null,
             filePath,
             listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token)))
         { code: Int, body: String ->
