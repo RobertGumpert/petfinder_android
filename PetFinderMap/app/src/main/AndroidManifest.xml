@@ -48,6 +48,17 @@
         </activity>
         <activity android:name=".activities.AdActivity" />
         <activity android:name=".activities.AddActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <activity android:name=".activities.ComplaintActivity" />
         <activity android:name=".activities.DialogsActivity" />
         <activity android:name=".activities.MyAdsActivity" />
@@ -56,6 +67,9 @@
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.PersonalAreaActivity" />
         <activity android:name=".activities.PasswordResetActivity" />
+
+        <service android:name=".services.MapsService"  android:enabled="true" android:exported="true" />
+
     </application>
 
 </manifest>

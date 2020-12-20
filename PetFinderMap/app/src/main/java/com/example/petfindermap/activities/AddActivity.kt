@@ -1,6 +1,7 @@
 package com.example.petfindermap.activities
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,9 +11,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
-import android.content.ContentValues
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -48,7 +47,11 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
     var camera: Camera? = null
     var image_uri: Uri? = null
 
-
+    private val REQUEST_EXTERNAL_STORAGE = 1
+    private val PERMISSIONS_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
 
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -66,6 +69,31 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        var requestPerm = false
+        for (permission in PERMISSIONS_STORAGE) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                requestPerm = true
+            }
+        }
+
+        if (requestPerm) {
+            ActivityCompat.requestPermissions(
+                this,
+                PERMISSIONS_STORAGE,
+                REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
+                                            grantResults: IntArray) {
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    toMain(null)
+                }
+            }
+        }
     }
 
     fun toGallery(view: View?) {
@@ -95,12 +123,11 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             Pick_image_g -> {
                 if (resultCode == RESULT_OK) {
                     try {
-                        val imageUri = imageReturnedIntent!!.data as Uri
+                        image_uri = imageReturnedIntent!!.data as Uri
                         val imageStream =
-                            getContentResolver().openInputStream(imageUri) as InputStream
+                            getContentResolver().openInputStream(image_uri!!) as InputStream
                         val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
-                        imageViewPet?.setImageBitmap(selectedImage);
-
+                        imageViewPet?.setImageBitmap(selectedImage)
                     } catch (e: FileNotFoundException) {
                         e.printStackTrace();
                     }
@@ -112,7 +139,6 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                         image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
                     val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
                     imageViewPet?.setImageBitmap(selectedImage)
-
                 }
             }
         }
@@ -122,6 +148,14 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
     fun toMain(view: View?) {
         val toMain = Intent(this, MapsActivity::class.java)
         startActivity(toMain)
+    }
+
+    fun getPath(uri: Uri?): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = managedQuery(uri, projection, null, null, null)
+        val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor.moveToFirst()
+        return cursor.getString(column_index)
     }
 
     private fun addAd() {
@@ -145,7 +179,12 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 comment_text
             )
 
-            adService.addAd(adCreateHttpModel) {
+            var filePath: String? = null
+            if (image_uri != null) {
+                filePath = getPath(image_uri)
+                image_uri = null
+            }
+            adService.addAd(adCreateHttpModel, filePath) {
                 if (it != null) {
                     runOnUiThread {
                         val toMain = Intent(this, MapsActivity::class.java)
