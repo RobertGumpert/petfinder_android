@@ -95,9 +95,9 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             Pick_image_g -> {
                 if (resultCode == RESULT_OK) {
                     try {
-                        val imageUri = imageReturnedIntent!!.data as Uri
+                        image_uri = imageReturnedIntent!!.data as Uri
                         val imageStream =
-                            getContentResolver().openInputStream(imageUri) as InputStream
+                            getContentResolver().openInputStream(image_uri!!) as InputStream
                         val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
                         imageViewPet?.setImageBitmap(selectedImage);
 
@@ -108,8 +108,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             }
             Pick_image_c -> {
                 if (resultCode == RESULT_OK) {
-                    val imageStream =
-                        image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
+                    val imageStream = image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
                     val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
                     imageViewPet?.setImageBitmap(selectedImage)
 
@@ -145,7 +144,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 comment_text
             )
 
-            adService.addAd(adCreateHttpModel) {
+            adService.addAd(adCreateHttpModel, image_uri.toString()) {
                 if (it != null) {
                     runOnUiThread {
                         val toMain = Intent(this, MapsActivity::class.java)
