@@ -123,6 +123,6 @@ class MapsService() : Service(), android.location.LocationListener {
         ) {
             return
         }
-        lm!!.requestLocationUpdates(lm!!.getBestProvider(Criteria(), true), 5000, 0f, this)
+        lm!!.requestLocationUpdates(lm!!.getBestProvider(Criteria(), true), 5000*60, 0f, this)
     }
 }
