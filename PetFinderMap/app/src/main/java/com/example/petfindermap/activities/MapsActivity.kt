@@ -4,6 +4,7 @@ package com.example.petfindermap.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -25,10 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonClickListener,
@@ -114,6 +112,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                         )
                         if(it.ad_type == 1){
                             markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
+                            val searchAdvertAreaCircle = CircleOptions().center(LatLng(it.geo_latitude, it.geo_longitude)).strokeWidth(0F)
+                            searchAdvertAreaCircle.radius(1000.0)
+                            searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
+                            googleMap.addCircle(searchAdvertAreaCircle)
                         }
                         else{
                             markerOptions.title("Найден " + it.animal_type + " " + it.animal_breed)
@@ -204,35 +206,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
         flagOpenListAdverts = !flagOpenListAdverts
     }
-//
-//    private fun findAdvertsInArea() {
-//        val listAdverts: ArrayList<AdvertModel>? = this.services.adService?.searchAdvertInArea(
-//            this.deviceCurrentLocation.latitude,
-//            this.deviceCurrentLocation.longitude
-//        )
-//        if (listAdverts != null) {
-//            for (advert: AdvertModel in listAdverts) {
-//                val position = LatLng(advert.GeoLatitude, advert.GeoLongitude)
-//                val searchAdvertAreaCircle =
-//                    CircleOptions().center(LatLng(position.latitude, position.longitude))
-//                        .strokeWidth(0F)
-//                val marker = MarkerOptions().position(position)
-//                //
-//                if (advert.AdType == 1) {
-//                    searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
-//                    marker.title("Потерян " + advert.CommentText + "'")
-//                    searchAdvertAreaCircle.radius(200.0)
-//                } else {
-//                    searchAdvertAreaCircle.fillColor(Color.parseColor("#908bf78c"))
-//                    marker.title("Найден " + advert.CommentText + "'")
-//                    searchAdvertAreaCircle.radius(100.0)
-//                }
-//                //
-//                googleMap.addMarker(marker).showInfoWindow()
-//                googleMap.addCircle(searchAdvertAreaCircle)
-//            }
-//        }
-//    }
 
     fun menuButton(view: View) {
         when (view.id) {
