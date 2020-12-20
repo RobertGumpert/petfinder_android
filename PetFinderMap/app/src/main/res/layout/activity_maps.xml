@@ -83,7 +83,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-        <RelativeLayout
+    <RelativeLayout
         android:id="@+id/menu_slide"
         android:layout_width="205dp"
         android:layout_height="730dp"
@@ -104,10 +104,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
             android:layout_marginTop="85dp"
+            android:onClick="menuButton"
             android:text="Сообщения"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:onClick="menuButton"/>
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/textViewMenuMyAds"
             android:layout_width="150dp"
@@ -116,10 +117,24 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
             android:layout_marginTop="135dp"
+            android:onClick="menuButton"
             android:text="Мои объявления"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:onClick="menuButton"/>
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/textViewMenuPersonalArea"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="27dp"
+            android:layout_marginTop="198dp"
+            android:onClick="menuButton"
+            android:text="Личный кабинет"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

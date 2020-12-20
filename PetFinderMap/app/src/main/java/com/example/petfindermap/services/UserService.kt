@@ -67,6 +67,108 @@ class UserService {
         }
     }
 
+    fun signOut(callback: (Int)-> Unit) {
+        httpManager.query(
+            "au",
+            "/api/user/access/out",
+            null,
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
+            if (code == 200) {
+                this.user = null
+                deleteUser() {
+                    callback(code)
+                }
+            }
+            if (code == 401) {
+                val info = gson.fromJson(body, ErrorHttpModel::class.java)
+                if(info.error == "Non valid access token. ") {
+                    refreshAccessToken() {
+                        callback(code)
+                    }
+                }
+            } else {
+                callback(code)
+            }
+        }
+    }
+
+    fun getResetPasswordToken(callback: (Int)-> Unit) {
+        httpManager.query(
+            "au",
+            "/api/user/password/token",
+            null,
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
+            if (code == 200) {
+                callback(code)
+            }
+            if (code == 401) {
+                val info = gson.fromJson(body, ErrorHttpModel::class.java)
+                if(info.error == "Non valid access token. ") {
+                    refreshAccessToken() {
+                        callback(code)
+                    }
+                }
+            } else {
+                callback(code)
+            }
+        }
+    }
+
+    fun resetPassword(userResetPasswordModel: UserResetPasswordHttpModel, callback: (Int)-> Unit) {
+        httpManager.query(
+            "au",
+            "/api/user/password/reset",
+            gson.toJson(userResetPasswordModel),
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
+            if (code == 200) {
+                val info = gson.fromJson(body, UserModel::class.java)
+                createOrUpdateUserData(info) {
+                    callback(code)
+                }
+            }
+            if (code == 401) {
+                val info = gson.fromJson(body, ErrorHttpModel::class.java)
+                if(info.error == "Non valid access token. ") {
+                    refreshAccessToken() {
+                        callback(code)
+                    }
+                }
+            } else {
+                callback(code)
+            }
+        }
+    }
+
+    fun updateUser(updateUserModel: UserUpdateHttpModel, callback: (Int, String)-> Unit) {
+        updateUserModel.user_id = user!!.user_id
+        httpManager.query(
+            "au",
+            "/api/user/update",
+            gson.toJson(updateUserModel),
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
+            if (code == 200) {
+                val info = gson.fromJson(body, UserModel::class.java)
+                createOrUpdateUserData(info) {
+                    callback(code, body)
+                }
+            }
+            if (code == 401) {
+                val info = gson.fromJson(body, ErrorHttpModel::class.java)
+                if(info.error == "Non valid access token. ") {
+                    refreshAccessToken() {
+                        callback(code, body)
+                    }
+                }
+            } else {
+                callback(code, body)
+            }
+        }
+    }
+
     fun createOrUpdateUserData(info: UserModel, callback: ()-> Unit) {
         user = UserModel(
             user_id = info.user_id,
@@ -176,6 +278,21 @@ class UserService {
                 user = null
                 callback()
             }
+        }
+    }
+
+    private fun deleteUser(callback: ()-> Unit) {
+        runBlocking {
+            val truncateUserTable = GlobalScope.launch {
+                val users = appDatabase.userDao().getAll()
+                if (users.isNotEmpty()) {
+                    users.forEach {
+                        appDatabase.userDao().delete(it)
+                    }
+                }
+            }
+            truncateUserTable.join()
+            callback()
         }
     }
 }

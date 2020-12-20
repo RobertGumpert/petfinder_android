@@ -70,6 +70,12 @@ class DialogsActivity : AppCompatActivity() {
                 startActivity(map)
             }
         }
+        when (view.id) {
+            R.id.textViewMenuPersonalArea -> {
+                val personalArea = Intent(this, PersonalAreaActivity::class.java)
+                startActivity(personalArea)
+            }
+        }
     }
 
     fun dialogItemPress (view: View?) {
