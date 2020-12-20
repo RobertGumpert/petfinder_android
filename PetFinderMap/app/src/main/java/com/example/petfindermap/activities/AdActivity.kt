@@ -1,15 +1,22 @@
 package com.example.petfindermap.activities
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.petfindermap.HttpManager
 import com.example.petfindermap.R
 import com.example.petfindermap.services.AdService
 import com.example.petfindermap.services.DialogsService
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
@@ -57,6 +64,20 @@ class AdActivity : AppCompatActivity() {
 
             val textViewComment: TextView  = findViewById(R.id.textViewComment)
             textViewComment.text = ad.comment_text
+
+            val imageView: ImageView = findViewById(R.id.imageView)
+            runBlocking {
+                val downloaderPhotoFile = GlobalScope.launch {
+                    val updateUrl = ad.image_url.replace(
+                        oldValue = "127.0.0.1",
+                        newValue = HttpManager.getInstance().IP_ADDR_DEVICE
+                    )
+                    val url = URL(updateUrl)
+                    val bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    imageView.setImageBitmap(bmp)
+                }
+                downloaderPhotoFile.join()
+            }
         }
 
         if (isMine) {

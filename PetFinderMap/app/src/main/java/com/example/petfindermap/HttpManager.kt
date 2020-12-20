@@ -66,7 +66,6 @@ class HttpManager {
         serviceName: String,
         route: String,
         postBody: String,
-        fileName: String?,
         filePath: String?,
         postHeaders: List<Pair<String, String>>,
         callback: (Int, String) -> Unit
