@@ -2,7 +2,9 @@ package com.example.petfindermap
 
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.io.IOException
 
 
@@ -59,14 +61,18 @@ class HttpManager {
         serviceName: String,
         route: String,
         postBody: String,
+        fileName: String?,
+        fileUri: String,
         postHeaders: List<Pair<String, String>>,
         callback: (Int, String) -> Unit
     ) {
         var request = Request.Builder()
             .url(url[serviceName] + route)
-        val requestBody: RequestBody = MultipartBody.Builder()
+        val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("json", postBody)
+            .addFormDataPart("file", fileName,
+                File(fileUri).asRequestBody("application/octet-stream".toMediaTypeOrNull()))
             .build()
         request = request.post(requestBody)
         postHeaders.forEach {
