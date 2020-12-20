@@ -65,6 +65,9 @@
         <activity android:name=".activities.MessagesActivity" />
         <activity android:name=".activities.SignInActivity" />
         <activity android:name=".activities.SignUpActivity" />
+
+        <service android:name=".services.MapsService"  android:enabled="true" android:exported="true" />
+
     </application>
 
 </manifest>
