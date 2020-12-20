@@ -65,6 +65,8 @@
         <activity android:name=".activities.MessagesActivity" />
         <activity android:name=".activities.SignInActivity" />
         <activity android:name=".activities.SignUpActivity" />
+        <activity android:name=".activities.PersonalAreaActivity" />
+        <activity android:name=".activities.PasswordResetActivity" />
 
         <service android:name=".services.MapsService"  android:enabled="true" android:exported="true" />
 

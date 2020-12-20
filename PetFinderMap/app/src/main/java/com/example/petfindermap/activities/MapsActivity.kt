@@ -410,6 +410,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                 val myAds = Intent(this, MyAdsActivity::class.java)
                 startActivity(myAds)
             }
+            R.id.textViewMenuPersonalArea -> {
+                val personalArea = Intent(this, PersonalAreaActivity::class.java)
+                startActivity(personalArea)
+            }
         }
     }
 
