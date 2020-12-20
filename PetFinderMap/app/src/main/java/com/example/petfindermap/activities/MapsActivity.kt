@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.petfindermap.R
@@ -51,6 +50,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
     private lateinit var buttonMenu: Button
     private lateinit var buttonAddAd: Button
     private lateinit var buttonListAdverts: Button
+    private val NOTIFY_ID = 101
+    private val CHANNEL_ID = "Notification channel"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,12 +89,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
         val adList: ArrayList<AdModel> = arrayListOf()
         if (userService.user == null) return
-        adService.getAds(AdsLocationHttpModel(
-            userService.user!!.user_id,
-            true,
-            0.0,
-            0.0
-        )) { adsHttpModel ->
+        adService.getAds(
+            AdsLocationHttpModel(
+                userService.user!!.user_id,
+                true,
+                0.0,
+                0.0
+            )
+        ) { adsHttpModel ->
             if (adsHttpModel != null) {
                 adList.addAll(adsHttpModel.lost.list)
                 adList.addAll(adsHttpModel.found.list)
@@ -103,13 +106,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                 runOnUiThread {
                     ads.forEach{
                         Log.d("adInfo", it.toString())
-                        val markerOptions = MarkerOptions().position(LatLng(it.geo_latitude, it.geo_longitude))
+                        val markerOptions = MarkerOptions().position(
+                            LatLng(
+                                it.geo_latitude,
+                                it.geo_longitude
+                            )
+                        )
                         if(it.ad_type == 1){
                             markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
                         }
                         else{
                             markerOptions.title("Найден " + it.animal_type + " " + it.animal_breed)
-                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                            markerOptions.icon(
+                                BitmapDescriptorFactory.defaultMarker(
+                                    BitmapDescriptorFactory.HUE_AZURE
+                                )
+                            )
                         }
                         markerAd = this.googleMap.addMarker(markerOptions)
                         markerAd.setTag(it.ad_id)
@@ -120,6 +132,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
         this.googleMap.getUiSettings().setZoomControlsEnabled(true)
         this.googleMap.setOnInfoWindowClickListener(this)
+
         setUpMap()
     }
 
@@ -135,8 +148,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
 
     override fun onMyLocationButtonClick(): Boolean {
-        googleMap.clear()
-        this.deviceCurrentLocation = googleMap.myLocation
+
         return false
     }
 
@@ -166,12 +178,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
 
             val adList: ArrayList<AdModel> = arrayListOf()
             if (userService.user == null) return
-            adService.getAds(AdsLocationHttpModel(
-                userService.user!!.user_id,
-                true,
-                0.0,
-                0.0
-            )) { adsHttpModel ->
+            adService.getAds(
+                AdsLocationHttpModel(
+                    userService.user!!.user_id,
+                    true,
+                    0.0,
+                    0.0
+                )
+            ) { adsHttpModel ->
                 if (adsHttpModel != null) {
                     adList.addAll(adsHttpModel.lost.list)
                     adList.addAll(adsHttpModel.found.list)
@@ -238,7 +252,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         startActivity(addAd)
     }
 
-    fun adItemPress (view: View?) {
+    fun adItemPress(view: View?) {
         val ad = ads.find { it.ad_id == view?.tag}
         if (ad == null) return
         adService.saveAd(ad)
