@@ -39,14 +39,14 @@ class AdService {
     }
 
 
-    fun addAd(adCreateHttpModel: AdCreateHttpModel, fileUri: String, callback: (AdModel?)-> Unit) {
+    fun addAd(adCreateHttpModel: AdCreateHttpModel, filePath: String?, callback: (AdModel?)-> Unit) {
         val postBody = gson.toJson(adCreateHttpModel)
         httpManager.queryFormData(
             "ad",
             "/api/advert/user/add",
             postBody,
             null,
-            fileUri,
+            filePath,
             listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token)))
         { code: Int, body: String ->
             when (code) {
