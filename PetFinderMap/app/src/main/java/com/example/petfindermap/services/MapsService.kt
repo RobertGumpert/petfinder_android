@@ -34,7 +34,6 @@ class MapsService() : Service(), android.location.LocationListener {
 
     override fun onLocationChanged(location: Location) {
         Log.d(TAG, "onChanged")
-        mLastLocation.set(location)
         if (userService.user == null) return
         adService.getAds(
             AdsLocationHttpModel(
@@ -47,8 +46,8 @@ class MapsService() : Service(), android.location.LocationListener {
             if (adsHttpModel != null) {
                 adsHttpModel.lost.list.forEach{
                     Location.distanceBetween(
-                        mLastLocation.latitude,
-                        mLastLocation.longitude, it.geo_latitude,
+                        location.latitude,
+                        location.longitude, it.geo_latitude,
                         it.geo_longitude, distance
                     );
 
