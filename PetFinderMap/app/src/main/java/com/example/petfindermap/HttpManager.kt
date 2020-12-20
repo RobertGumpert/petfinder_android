@@ -6,15 +6,16 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
+import java.net.URI
 
 
 class HttpManager {
     private val client = OkHttpClient()
     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
     private val url: Map<String, String> = mapOf(
-        "au" to "http://192.168.1.65:5490",
-        "ad" to "http://192.168.1.65:5492",
-        "di" to "http://192.168.1.65:5493"
+        "au" to "http://192.168.1.67:5490",
+        "ad" to "http://192.168.1.67:5492",
+        "di" to "http://192.168.1.67:5493"
     )
 
     companion object {
@@ -62,7 +63,7 @@ class HttpManager {
         route: String,
         postBody: String,
         fileName: String?,
-        fileUri: String,
+        filePath: String?,
         postHeaders: List<Pair<String, String>>,
         callback: (Int, String) -> Unit
     ) {
@@ -71,10 +72,11 @@ class HttpManager {
         val requestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("json", postBody)
-            .addFormDataPart("file", fileName,
-                File(fileUri).asRequestBody("application/octet-stream".toMediaTypeOrNull()))
-            .build()
-        request = request.post(requestBody)
+        if (filePath != null) {
+            requestBody.addFormDataPart("file", "file",
+                File(filePath).asRequestBody("image/png".toMediaTypeOrNull()))
+        }
+        request = request.post(requestBody.build())
         postHeaders.forEach {
             request.addHeader(it.first, it.second)
         }
