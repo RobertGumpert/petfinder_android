@@ -1,4 +1,5 @@
 package com.example.petfindermap.services
+
 import android.Manifest
 import android.app.*
 import android.content.Intent
@@ -10,8 +11,12 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.example.petfindermap.MainActivity
+import com.example.petfindermap.activities.AdActivity
 import com.example.petfindermap.activities.MapsActivity
 import com.example.petfindermap.models.AdsLocationHttpModel
+import java.lang.Math.pow
+import kotlin.math.sqrt
 
 
 class MapsService() : Service(), android.location.LocationListener {
@@ -19,11 +24,9 @@ class MapsService() : Service(), android.location.LocationListener {
     var lm: LocationManager? = null
     private var userService: UserService = UserService.getInstance()
     private var adService: AdService = AdService.getInstance()
-    private lateinit var distance : FloatArray
     private val NOTIFY_ID: Int = 100;
     private val CHANEL_ID = "MyTestApp"
     private val CHANEL_NAME = "MyTestAppChannel"
-    lateinit var mLastLocation : Location
     private val TAG = "BOOMBOOMTESTGPS"
     override fun onBind(arg0: Intent?): IBinder? {
         // TODO Auto-generated method stub
@@ -34,7 +37,6 @@ class MapsService() : Service(), android.location.LocationListener {
 
     override fun onLocationChanged(location: Location) {
         Log.d(TAG, "onChanged")
-        mLastLocation.set(location)
         if (userService.user == null) return
         adService.getAds(
             AdsLocationHttpModel(
@@ -45,33 +47,60 @@ class MapsService() : Service(), android.location.LocationListener {
             )
         ) { adsHttpModel ->
             if (adsHttpModel != null) {
+                val distances = arrayListOf<Pair<Int, Double>>()
                 adsHttpModel.lost.list.forEach{
-                    Location.distanceBetween(
-                        mLastLocation.latitude,
-                        mLastLocation.longitude, it.geo_latitude,
-                        it.geo_longitude, distance
-                    );
+                    distances.add(
+                        Pair(
+                            it.ad_id, sqrt(
+                                pow(location.latitude - it.geo_latitude, 2.0) + pow(
+                                    location.longitude - it.geo_longitude,
+                                    2.0
+                                )
+                            ) * 40000 / 360 * 1000
+                        )
+                    )
+//                    Location.distanceBetween(
+//                        location.latitude,
+//                        location.longitude,
+//                        it.geo_latitude,
+//                        it.geo_longitude,
+//                        distance
+//                    );
 
                 }
-                for (fl in distance) {
-                    if (fl < 1000) {
-
-                        val notificationIntent = Intent(applicationContext, MapsActivity::class.java)
-                        val contentIntent = PendingIntent.getActivity(applicationContext, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-                        val notificationChannel: NotificationChannel = NotificationChannel(CHANEL_ID, CHANEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
+                distances.sortBy {
+                    it.second
+                }
+                Log.d("BOOMBOOMTESTGPS", distances.toString())
+                if (distances[0].second < 500) {
+                    val notificationIntent = Intent(applicationContext, AdActivity::class.java)
+                    val ad = adsHttpModel.lost.list.find { it.ad_id == distances[0].first}
+                    if (ad != null) {
+                        adService.saveAd(ad)
+                        notificationIntent.putExtra("isMine", (false).toString())
+                        val contentIntent = PendingIntent.getActivity(
+                            applicationContext,
+                            0,
+                            notificationIntent,
+                            PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                        val notificationChannel: NotificationChannel = NotificationChannel(
+                            CHANEL_ID,
+                            CHANEL_NAME,
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        )
                         notificationChannel.description = "Test"
                         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                         notificationManager.createNotificationChannel(notificationChannel)
                         val builder = Notification.Builder(applicationContext, CHANEL_ID)
                         builder.setContentIntent(contentIntent)
                             .setSmallIcon(com.example.petfindermap.R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Уведомление")
-                            .setContentText("Тест")
+                            .setContentTitle("Помогите найти!")
+                            .setContentText("Рядом с вами потерялся питомец: " + ad.animal_type)
+                            .setAutoCancel(true)
                         notificationManager.notify(NOTIFY_ID, builder.build())
                     }
                 }
-
-
             }
         }
     }
@@ -112,7 +141,7 @@ class MapsService() : Service(), android.location.LocationListener {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        lm!!.requestLocationUpdates(lm!!.getBestProvider(Criteria(), true), 0, 0f, this)
+        lm!!.requestLocationUpdates(lm!!.getBestProvider(Criteria(), true), 5 * 60000, 0f, this)
     }
 
 
