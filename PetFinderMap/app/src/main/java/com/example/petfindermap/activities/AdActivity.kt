@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.petfindermap.R
+import com.example.petfindermap.models.AdModel
 import com.example.petfindermap.services.AdService
 import com.example.petfindermap.services.DialogsService
 import com.google.android.gms.maps.model.LatLng
@@ -17,7 +18,7 @@ class AdActivity : AppCompatActivity() {
     private val adService: AdService = AdService.getInstance()
     private val dialogsService: DialogsService = DialogsService.getInstance()
 
-    private var adId: Long = -1
+    private var ad: AdModel? = null
     private var isMine: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +28,7 @@ class AdActivity : AppCompatActivity() {
 
         val isMine = intent.getStringExtra("isMine").toBoolean()
         this.isMine = isMine
-        val ad = adService.getAd()
+        ad = adService.getAd()
         if (ad == null) {
             val intent = Intent(this, MapsActivity::class.java)
             startActivity(intent)
@@ -36,27 +37,27 @@ class AdActivity : AppCompatActivity() {
             val textViewType: TextView  = findViewById(R.id.textViewType)
             var typeText = "Потерян!"
             var typeTextDate = "Потерялся: "
-            if (ad.ad_type == 2)  {
+            if (ad!!.ad_type == 2)  {
                 typeText = "Найден!"
                 typeTextDate = "Нашелся: "
             }
             textViewType.text = typeText
 
             val textViewPet: TextView  = findViewById(R.id.textViewPet)
-            textViewPet.text = ad.animal_type + ", " + ad.animal_breed
+            textViewPet.text = ad!!.animal_type + ", " + ad!!.animal_breed
 
             val textViewName: TextView  = findViewById(R.id.textViewName)
-            textViewName.text = "Владелец: " + ad.ad_owner_name
+            textViewName.text = "Владелец: " + ad!!.ad_owner_name
 
             val textViewDate: TextView  = findViewById(R.id.textViewDate)
             val format = SimpleDateFormat("dd/MM/yyy")
-            textViewDate.text = typeTextDate + format.format(ad.date_create)
+            textViewDate.text = typeTextDate + format.format(ad!!.date_create)
 
             val textViewAddress: TextView  = findViewById(R.id.textViewAddress)
-            textViewAddress.text = adService.getAddress(LatLng(ad.geo_latitude, ad.geo_longitude))
+            textViewAddress.text = adService.getAddress(LatLng(ad!!.geo_latitude, ad!!.geo_longitude))
 
             val textViewComment: TextView  = findViewById(R.id.textViewComment)
-            textViewComment.text = ad.comment_text
+            textViewComment.text = ad!!.comment_text
         }
 
         if (isMine) {
@@ -98,11 +99,19 @@ class AdActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun createComplaint (view: View?) {
-        val intent = Intent(this, ComplaintActivity::class.java)
-        intent.putExtra("adId", adId.toString())
+    fun toMarker (view: View?) {
+        if(ad == null) return
+        val intent = Intent(this, MapsActivity::class.java)
+        intent.putExtra("goToMarkerAdLatitude", ad!!.geo_latitude.toString())
+        intent.putExtra("goToMarkerAdLongitude", ad!!.geo_longitude.toString())
         startActivity(intent)
     }
+
+//    fun createComplaint (view: View?) {
+//        val intent = Intent(this, ComplaintActivity::class.java)
+//        intent.putExtra("adId", ad!!.toString())
+//        startActivity(intent)
+//    }
 
     fun goToDialog (view: View) {
         if (isMine) return
