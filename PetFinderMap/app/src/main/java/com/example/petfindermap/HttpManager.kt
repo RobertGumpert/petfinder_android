@@ -1,6 +1,7 @@
 package com.example.petfindermap
 
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -73,8 +74,9 @@ class HttpManager {
             .setType(MultipartBody.FORM)
             .addFormDataPart("json", postBody)
         if (filePath != null) {
-            requestBody.addFormDataPart("file", "file",
-                File(filePath).asRequestBody("image/png".toMediaTypeOrNull()))
+            val file = File(filePath)
+            val fileReq = file.asRequestBody("image/jpeg".toMediaType())
+            requestBody.addFormDataPart("file", filePath, fileReq)
         }
         request = request.post(requestBody.build())
         postHeaders.forEach {

@@ -124,8 +124,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
                 if (resultCode == RESULT_OK) {
                     try {
                         image_uri = imageReturnedIntent!!.data as Uri
-                        val imageStream =
-                            getContentResolver().openInputStream(image_uri!!) as InputStream
+                        val imageStream = getContentResolver().openInputStream(image_uri!!) as InputStream
                         val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
                         imageViewPet?.setImageBitmap(selectedImage)
                     } catch (e: FileNotFoundException) {
@@ -135,8 +134,7 @@ class AddActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButtonC
             }
             Pick_image_c -> {
                 if (resultCode == RESULT_OK) {
-                    val imageStream =
-                        image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
+                    val imageStream = image_uri?.let { getContentResolver().openInputStream(it) } as InputStream
                     val selectedImage = BitmapFactory.decodeStream(imageStream) as Bitmap
                     imageViewPet?.setImageBitmap(selectedImage)
                 }
