@@ -28,7 +28,7 @@ class DialogsService {
         }
     }
 
-    fun getDialogsMessages(callback: (List<DialogModel>?)-> Unit) {
+    fun getDialogsMessages(callback: (ArrayList<DialogModel>?)-> Unit) {
         httpManager.query("di","/api/user/dialog/get", null, listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token))) { code: Int, body: String ->
             when (code) {
                 200 -> {
