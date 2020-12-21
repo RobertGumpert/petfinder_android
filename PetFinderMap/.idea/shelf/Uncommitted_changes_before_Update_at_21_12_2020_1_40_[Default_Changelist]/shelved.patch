@@ -1,0 +1,46 @@
+Index: app/src/main/res/xml/network_security_config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<network-security-config>\r\n    <domain-config cleartextTrafficPermitted=\"true\">\r\n        <domain includeSubdomains=\"true\">192.168.1.67</domain>\r\n    </domain-config>\r\n</network-security-config>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/xml/network_security_config.xml	(revision c3caa2787eac0230b8bd42c1274f840ed0a965b9)
++++ app/src/main/res/xml/network_security_config.xml	(date 1608503884429)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <network-security-config>
+     <domain-config cleartextTrafficPermitted="true">
+-        <domain includeSubdomains="true">192.168.1.67</domain>
++        <domain includeSubdomains="true">192.168.1.126</domain>
+     </domain-config>
+ </network-security-config>
+\ No newline at end of file
+Index: app/src/main/java/com/example/petfindermap/HttpManager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.petfindermap\r\n\r\nimport okhttp3.*\r\nimport okhttp3.MediaType.Companion.toMediaType\r\nimport okhttp3.MediaType.Companion.toMediaTypeOrNull\r\nimport okhttp3.RequestBody.Companion.asRequestBody\r\nimport okhttp3.RequestBody.Companion.toRequestBody\r\nimport java.io.File\r\nimport java.io.IOException\r\nimport java.net.URI\r\n\r\n\r\nclass HttpManager {\r\n\r\n    val IP_ADDR_DEVICE = \"192.168.1.67\"\r\n\r\n    private val client = OkHttpClient()\r\n    private val JSON: MediaType? = \"application/json; charset=utf-8\".toMediaTypeOrNull()\r\n    private val url: Map<String, String> = mapOf(\r\n        \"au\" to \"http://192.168.1.67:5490\",\r\n        \"ad\" to \"http://192.168.1.67:5492\",\r\n        \"di\" to \"http://192.168.1.67:5493\"\r\n    )\r\n\r\n    companion object {\r\n        private var instance: HttpManager? = null\r\n        fun getInstance(): HttpManager {\r\n            if (instance == null) {\r\n                instance = HttpManager()\r\n            }\r\n            return instance!!\r\n        }\r\n    }\r\n\r\n    fun query(\r\n        serviceName: String,\r\n        route: String,\r\n        postBody: String?,\r\n        postHeaders: List<Pair<String, String>>,\r\n        callback: (Int, String) -> Unit\r\n    ) {\r\n        var request = Request.Builder()\r\n            .url(url[serviceName] + route)\r\n        if (postBody != null) {\r\n            request = request.post(postBody.toRequestBody(JSON))\r\n        }\r\n        postHeaders.forEach {\r\n            request.addHeader(it.first, it.second)\r\n        }\r\n\r\n        val requestB = request.build()\r\n        client.newCall(requestB).enqueue(object : Callback {\r\n            override fun onFailure(call: Call, e: IOException) {\r\n                e.printStackTrace()\r\n            }\r\n\r\n            override fun onResponse(call: Call, response: Response) {\r\n                response.use {\r\n                    callback(response.code, response.body!!.string())\r\n                }\r\n            }\r\n        })\r\n    }\r\n\r\n    fun queryFormData(\r\n        serviceName: String,\r\n        route: String,\r\n        postBody: String,\r\n        fileName: String?,\r\n        filePath: String?,\r\n        postHeaders: List<Pair<String, String>>,\r\n        callback: (Int, String) -> Unit\r\n    ) {\r\n        var request = Request.Builder()\r\n            .url(url[serviceName] + route)\r\n        val requestBody = MultipartBody.Builder()\r\n            .setType(MultipartBody.FORM)\r\n            .addFormDataPart(\"json\", postBody)\r\n        if (filePath != null) {\r\n            val file = File(filePath)\r\n            val fileReq = file.asRequestBody(\"image/jpeg\".toMediaType())\r\n            requestBody.addFormDataPart(\"file\", filePath, fileReq)\r\n        }\r\n        request = request.post(requestBody.build())\r\n        postHeaders.forEach {\r\n            request.addHeader(it.first, it.second)\r\n        }\r\n\r\n        val requestB = request.build()\r\n        client.newCall(requestB).enqueue(object : Callback {\r\n            override fun onFailure(call: Call, e: IOException) {\r\n                e.printStackTrace()\r\n            }\r\n\r\n            override fun onResponse(call: Call, response: Response) {\r\n                response.use {\r\n                    callback(response.code, response.body!!.string())\r\n                }\r\n            }\r\n        })\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/petfindermap/HttpManager.kt	(revision c3caa2787eac0230b8bd42c1274f840ed0a965b9)
++++ app/src/main/java/com/example/petfindermap/HttpManager.kt	(date 1608503835461)
+@@ -12,14 +12,14 @@
+ 
+ class HttpManager {
+ 
+-    val IP_ADDR_DEVICE = "192.168.1.67"
++    val IP_ADDR_DEVICE = "192.168.1.126"
+ 
+     private val client = OkHttpClient()
+     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
+     private val url: Map<String, String> = mapOf(
+-        "au" to "http://192.168.1.67:5490",
+-        "ad" to "http://192.168.1.67:5492",
+-        "di" to "http://192.168.1.67:5493"
++        "au" to "http://192.168.1.126:5490",
++        "ad" to "http://192.168.1.126:5492",
++        "di" to "http://192.168.1.126:5493"
+     )
+ 
+     companion object {

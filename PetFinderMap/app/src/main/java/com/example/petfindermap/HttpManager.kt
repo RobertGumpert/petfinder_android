@@ -8,18 +8,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.IOException
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 
 class HttpManager {
 
-    val IP_ADDR_DEVICE = "192.168.1.67"
+    val IP_ADDR_DEVICE = "192.168.1.126"
 
-    private val client = OkHttpClient()
+    private var client = OkHttpClient()
     private val JSON: MediaType? = "application/json; charset=utf-8".toMediaTypeOrNull()
     private val url: Map<String, String> = mapOf(
-        "au" to "http://192.168.1.67:5490",
-        "ad" to "http://192.168.1.67:5492",
-        "di" to "http://192.168.1.67:5493"
+        "au" to "http://192.168.1.126:5490",
+        "ad" to "http://192.168.1.126:5492",
+        "di" to "http://192.168.1.126:5493"
     )
 
     companion object {
@@ -27,6 +28,7 @@ class HttpManager {
         fun getInstance(): HttpManager {
             if (instance == null) {
                 instance = HttpManager()
+
             }
             return instance!!
         }
@@ -49,6 +51,9 @@ class HttpManager {
         }
 
         val requestB = request.build()
+//        client.connectTimeoutMillis = 30 * TimeUnit.SECONDS
+//        client.setConnectTimeout(30, TimeUnit.SECONDS); // connect timeout
+//        client.setReadTimeout(30, TimeUnit.SECONDS);
         client.newCall(requestB).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
