@@ -31,7 +31,7 @@ class MessagesActivity : AppCompatActivity() {
             if (dialog != null) {
                 runOnUiThread {
                     val textViewName: TextView = findViewById(R.id.textViewName)
-                    var dialogName = ""
+                    var dialogName = dialog.dialog_name
                     if (dialog.dialog_name.length > 16) {
                         val dialogNameArgs = dialog.dialog_name.split(' ')
                         dialogName = dialogNameArgs[0] + " " + dialogNameArgs[1][0] + "."
