@@ -217,17 +217,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
         googleMap.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
-            var goToMarkerAdLatitude : String? = intent.getStringExtra("goToMarkerAdLatitude")
-            var goToMarkerAdLongitude : String? = intent.getStringExtra("goToMarkerAdLongitude")
-            if(goToMarkerAdLatitude != null && goToMarkerAdLongitude != null){
-                var goToMarkerAdLatitudeDouble = goToMarkerAdLatitude.toDouble()
-                var goToMarkerAdLongitudeDouble = goToMarkerAdLongitude.toDouble()
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(goToMarkerAdLatitudeDouble, goToMarkerAdLongitudeDouble), 18f))
-            }
-            else if (location != null) {
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
-
+            if (location != null) {
                 val adList: ArrayList<AdModel> = arrayListOf()
                 if (userService.user != null) {
                     adService.getAds(
@@ -279,11 +269,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
                                     }
                                     markerAd = this.googleMap.addMarker(markerOptions)
                                     markerAd.setTag(it.ad_id)
-
                                 }
                             }
                         }
                     }
+                }
+
+
+                var goToMarkerAdLatitude : String? = intent.getStringExtra("goToMarkerAdLatitude")
+                var goToMarkerAdLongitude : String? = intent.getStringExtra("goToMarkerAdLongitude")
+                if(goToMarkerAdLatitude != null && goToMarkerAdLongitude != null){
+                    var goToMarkerAdLatitudeDouble = goToMarkerAdLatitude.toDouble()
+                    var goToMarkerAdLongitudeDouble = goToMarkerAdLongitude.toDouble()
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(goToMarkerAdLatitudeDouble, goToMarkerAdLongitudeDouble), 18f))
+                }
+                else {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
                 }
             }
         }
