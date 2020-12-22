@@ -43,16 +43,16 @@
 
     <ListView
         android:id="@+id/lvMessages"
-        android:layout_width="400dp"
+        android:layout_width="360dp"
         android:layout_height="580dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:divider="@android:color/transparent"
         android:dividerHeight="20sp"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewName"></ListView>
 

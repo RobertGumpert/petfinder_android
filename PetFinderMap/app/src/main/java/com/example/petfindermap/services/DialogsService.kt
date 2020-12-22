@@ -47,6 +47,35 @@ class DialogsService {
         }
     }
 
+    fun getNextMessages(dialog_id: Int, last_skip: Int, callback: (DialogLoadHttpModel?)-> Unit) {
+        val loadMessagesHttpModel = LoadMessagesHttpModel(
+            dialog_id,
+            last_skip
+        )
+        val postBody = gson.toJson(loadMessagesHttpModel)
+        httpManager.query(
+            "di",
+            "/api/user/message/batching/next",
+            postBody,
+            listOf(Pair("Authorization", "Bearer " + userService.user!!.access_token)))
+        { code: Int, body: String ->
+            when (code) {
+                200 -> {
+                    val info = gson.fromJson(body, DialogLoadHttpModel::class.java)
+                    callback(info)
+                }
+                401 -> {
+                    userService.refreshAccessToken {
+                        callback(null)
+                    }
+                }
+                else -> {
+                    callback(null)
+                }
+            }
+        }
+    }
+
     fun createDialog(userId: Int, dialogName: String, callback: (Int?)-> Unit) {
         val dialogCreateHttpModel = DialogCreateHttpModel(userId,  dialogName)
         val postBody = gson.toJson(dialogCreateHttpModel)

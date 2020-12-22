@@ -18,9 +18,12 @@ import com.example.petfindermap.services.UserService
 class MessagesActivity : AppCompatActivity() {
     private val dialogsService: DialogsService = DialogsService.getInstance()
     private val userService: UserService = UserService.getInstance()
-    lateinit var messagesAdapter: MessagesAdapter
+    private lateinit var messagesAdapter: MessagesAdapter
+
+    private lateinit var lvMain: ListView
 
     private var dialogId: Int = -1
+    private var lastSkip: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,7 @@ class MessagesActivity : AppCompatActivity() {
         dialogsService.getDialogsMessages() {
             val dialog = it?.find { element -> element.dialog_id == dialogId }
             if (dialog != null) {
+                lastSkip = dialog.skip_messages
                 runOnUiThread {
                     val textViewName: TextView = findViewById(R.id.textViewName)
                     var dialogName = dialog.dialog_name
@@ -40,9 +44,21 @@ class MessagesActivity : AppCompatActivity() {
                         dialogName = dialogNameArgs[0] + " " + dialogNameArgs[1][0] + "."
                     }
                     textViewName.text = dialogName
-                    messagesAdapter = MessagesAdapter(this, dialog.messages, userService.user!!.user_id)
-                    val lvMain: ListView = findViewById(R.id.lvMessages)
+                    messagesAdapter = MessagesAdapter(this, dialog.messages, userService.user!!.user_id) {
+                        if (dialogId != -1 && lastSkip != -1) {
+                            dialogsService.getNextMessages(dialogId, lastSkip) {
+                                if (it != null) {
+                                    lastSkip = it.next_skip
+                                    runOnUiThread {
+                                        messagesAdapter.addFirstItems(it.messages)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    lvMain = findViewById(R.id.lvMessages)
                     lvMain.adapter = messagesAdapter
+                    lvMain.setSelection(dialog.messages.size - 1)
                 }
             }
         }
