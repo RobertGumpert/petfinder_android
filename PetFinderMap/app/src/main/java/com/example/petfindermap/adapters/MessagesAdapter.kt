@@ -41,14 +41,12 @@ class MessagesAdapter(val context: Context?, val objects: ArrayList<MessageModel
         val textViewMessage = (view?.findViewById(R.id.textViewMessage) as TextView)
         textViewMessage.text = p.text
         if (p.user_id == user_id) {
-            Log.d("MessagesAdapter", "My: " + p.text)
 //            if (textViewMessage.textAlignment != TextView.TEXT_ALIGNMENT_TEXT_END) {
 //                textViewMessage.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_END
 //            }
             (view as ConstraintLayout).setBackgroundResource(R.drawable.my_message_item_background)
         }
         else {
-            Log.d("MessagesAdapter", "Not my: " + p.text)
 //            if (textViewMessage.textAlignment != TextView.TEXT_ALIGNMENT_TEXT_START) {
 //                textViewMessage.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_START
 //            }
