@@ -2,6 +2,7 @@ package com.example.petfindermap.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ListView
@@ -12,9 +13,11 @@ import com.example.petfindermap.R
 import com.example.petfindermap.adapters.MessagesAdapter
 import com.example.petfindermap.models.MessageModel
 import com.example.petfindermap.services.DialogsService
+import com.example.petfindermap.services.UserService
 
 class MessagesActivity : AppCompatActivity() {
-    private var dialogsService: DialogsService = DialogsService.getInstance()
+    private val dialogsService: DialogsService = DialogsService.getInstance()
+    private val userService: UserService = UserService.getInstance()
     lateinit var messagesAdapter: MessagesAdapter
 
     private var dialogId: Int = -1
@@ -31,13 +34,13 @@ class MessagesActivity : AppCompatActivity() {
             if (dialog != null) {
                 runOnUiThread {
                     val textViewName: TextView = findViewById(R.id.textViewName)
-                    var dialogName = ""
+                    var dialogName = dialog.dialog_name
                     if (dialog.dialog_name.length > 16) {
                         val dialogNameArgs = dialog.dialog_name.split(' ')
                         dialogName = dialogNameArgs[0] + " " + dialogNameArgs[1][0] + "."
                     }
                     textViewName.text = dialogName
-                    messagesAdapter = MessagesAdapter(this, dialog.messages, dialog.user_receiver_id)
+                    messagesAdapter = MessagesAdapter(this, dialog.messages, userService.user!!.user_id)
                     val lvMain: ListView = findViewById(R.id.lvMessages)
                     lvMain.adapter = messagesAdapter
                 }

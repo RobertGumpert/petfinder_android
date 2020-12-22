@@ -86,59 +86,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
             this.googleMap.isMyLocationEnabled = true
         }
 
-        val adList: ArrayList<AdModel> = arrayListOf()
-        if (userService.user == null) return
-        adService.getAds(
-            AdsLocationHttpModel(
-                userService.user!!.user_id,
-                true,
-                0.0,
-                0.0
-            )
-        ) { adsHttpModel ->
-            if (adsHttpModel != null) {
-                adList.addAll(adsHttpModel.lost.list)
-                adList.addAll(adsHttpModel.found.list)
-                ads = arrayListOf()
-                ads.addAll(adList.sortedWith(compareBy { it.date_create }))
 
-                runOnUiThread {
-                    ads.forEach{
-                        Log.d("adInfo", it.toString())
-                        val markerOptions = MarkerOptions().position(
-                            LatLng(
-                                it.geo_latitude,
-                                it.geo_longitude
-                            )
-                        )
-                        if(it.ad_type == 1){
-                            markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
-                            val searchAdvertAreaCircle = CircleOptions().center(
-                                LatLng(
-                                    it.geo_latitude,
-                                    it.geo_longitude
-                                )
-                            ).strokeWidth(0F)
-                            searchAdvertAreaCircle.radius(100.0)
-                            searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
-                            googleMap.addCircle(searchAdvertAreaCircle)
-                        }
-                        else{
-                            markerOptions.title("Найден " + it.animal_type + " " + it.animal_breed)
-                            markerOptions.icon(
-                                BitmapDescriptorFactory.defaultMarker(
-                                    BitmapDescriptorFactory.HUE_AZURE
-                                )
-                            )
-
-                        }
-                        markerAd = this.googleMap.addMarker(markerOptions)
-                        markerAd.setTag(it.ad_id)
-
-                    }
-                }
-            }
-        }
 
 
         this.googleMap.getUiSettings().setZoomControlsEnabled(true)
@@ -189,28 +137,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         } else {
             viewListAdverts.visibility = View.VISIBLE
 
-            val adList: ArrayList<AdModel> = arrayListOf()
-            if (userService.user == null) return
-            adService.getAds(
-                AdsLocationHttpModel(
-                    userService.user!!.user_id,
-                    true,
-                    0.0,
-                    0.0
-                )
-            ) { adsHttpModel ->
-                if (adsHttpModel != null) {
-                    adList.addAll(adsHttpModel.lost.list)
-                    adList.addAll(adsHttpModel.found.list)
-                    ads = arrayListOf()
-                    ads.addAll(adList.sortedWith(compareBy { it.date_create }))
-
-                    runOnUiThread {
-                        val adapterListAdverts = AdsAdapter(this, ads)
-                        viewListAdverts.adapter = adapterListAdverts
-                    }
-                }
-            }
+//            val adList: ArrayList<AdModel> = arrayListOf()
+//            if (userService.user == null) return
+//            adService.getAds(
+//                AdsLocationHttpModel(
+//                    userService.user!!.user_id,
+//                    true,
+//                    0.0,
+//                    0.0
+//                )
+//            ) { adsHttpModel ->
+//                if (adsHttpModel != null) {
+//                    adList.addAll(adsHttpModel.lost.list)
+//                    adList.addAll(adsHttpModel.found.list)
+//                    ads = arrayListOf()
+//                    ads.addAll(adList.sortedWith(compareBy { it.date_create }))
+//
+//                    runOnUiThread {
+//                        val adapterListAdverts = AdsAdapter(this, ads)
+//                        viewListAdverts.adapter = adapterListAdverts
+//                    }
+//                }
+//            }
             buttonListAdverts.text = "Скрыть"
             buttonMenu.visibility = View.INVISIBLE
             buttonAddAd.visibility = View.INVISIBLE
@@ -269,16 +217,76 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, OnMyLocationButton
         }
         googleMap.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
-            var goToMarkerAdLatitude : String? = intent.getStringExtra("goToMarkerAdLatitude")
-            var goToMarkerAdLongitude : String? = intent.getStringExtra("goToMarkerAdLongitude")
-            if(goToMarkerAdLatitude != null && goToMarkerAdLongitude != null){
-                var goToMarkerAdLatitudeDouble = goToMarkerAdLatitude.toDouble()
-                var goToMarkerAdLongitudeDouble = goToMarkerAdLongitude.toDouble()
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(goToMarkerAdLatitudeDouble, goToMarkerAdLongitudeDouble), 18f))
-            }
-            else if (location != null) {
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+            if (location != null) {
+                val adList: ArrayList<AdModel> = arrayListOf()
+                if (userService.user != null) {
+                    adService.getAds(
+                        AdsLocationHttpModel(
+                            userService.user!!.user_id,
+                            true,
+                            location.longitude,
+                            location.latitude
+                        )
+                    ) { adsHttpModel ->
+                        if (adsHttpModel != null) {
+                            adList.addAll(adsHttpModel.lost.list)
+                            adList.addAll(adsHttpModel.found.list)
+                            ads = arrayListOf()
+                            ads.addAll(adList.sortedWith(compareBy { it.date_create }))
+
+                            runOnUiThread {
+                                val adapterListAdverts = AdsAdapter(this, ads)
+                                viewListAdverts.adapter = adapterListAdverts
+
+                                ads.forEach{
+                                    Log.d("adInfo", it.toString())
+                                    val markerOptions = MarkerOptions().position(
+                                        LatLng(
+                                            it.geo_latitude,
+                                            it.geo_longitude
+                                        )
+                                    )
+                                    if(it.ad_type == 1){
+                                        markerOptions.title("Потерян " + it.animal_type + " " + it.animal_breed)
+                                        val searchAdvertAreaCircle = CircleOptions().center(
+                                            LatLng(
+                                                it.geo_latitude,
+                                                it.geo_longitude
+                                            )
+                                        ).strokeWidth(0F)
+                                        searchAdvertAreaCircle.radius(100.0)
+                                        searchAdvertAreaCircle.fillColor(Color.parseColor("#90F6D047"))
+                                        googleMap.addCircle(searchAdvertAreaCircle)
+                                    }
+                                    else{
+                                        markerOptions.title("Найден " + it.animal_type + " " + it.animal_breed)
+                                        markerOptions.icon(
+                                            BitmapDescriptorFactory.defaultMarker(
+                                                BitmapDescriptorFactory.HUE_AZURE
+                                            )
+                                        )
+
+                                    }
+                                    markerAd = this.googleMap.addMarker(markerOptions)
+                                    markerAd.setTag(it.ad_id)
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                var goToMarkerAdLatitude : String? = intent.getStringExtra("goToMarkerAdLatitude")
+                var goToMarkerAdLongitude : String? = intent.getStringExtra("goToMarkerAdLongitude")
+                if(goToMarkerAdLatitude != null && goToMarkerAdLongitude != null){
+                    var goToMarkerAdLatitudeDouble = goToMarkerAdLatitude.toDouble()
+                    var goToMarkerAdLongitudeDouble = goToMarkerAdLongitude.toDouble()
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(goToMarkerAdLatitudeDouble, goToMarkerAdLongitudeDouble), 18f))
+                }
+                else {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+                }
             }
         }
     }

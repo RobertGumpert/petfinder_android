@@ -1,11 +1,14 @@
 package com.example.petfindermap.adapters
 
 import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.petfindermap.R
 import com.example.petfindermap.models.MessageModel
 
@@ -29,15 +32,19 @@ class MessagesAdapter(val context: Context?, val objects: ArrayList<MessageModel
 
         var view: View? = convertView
         if (view == null) {
-            var messageType = R.layout.messages_item;
-            if (p.user_id == user_id) {
-                messageType = R.layout.my_messages_item;
-            }
-            view = lInflater?.inflate(messageType, parent, false)
+            view = lInflater?.inflate(R.layout.messages_item, parent, false)
         }
 
-        (view?.findViewById(R.id.textViewMessage) as TextView).text = p.text
-
+        val textViewMessage = (view?.findViewById(R.id.textViewMessage) as TextView)
+        textViewMessage.text = p.text
+        if (p.user_id == user_id) {
+            textViewMessage.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_END
+            (view as ConstraintLayout).setBackgroundResource(R.drawable.my_message_item_background)
+        }
+        else {
+            textViewMessage.textAlignment = TextView.TEXT_ALIGNMENT_TEXT_START
+            (view as ConstraintLayout).setBackgroundResource(R.drawable.dialog_item_background)
+        }
 
         return view
     }
