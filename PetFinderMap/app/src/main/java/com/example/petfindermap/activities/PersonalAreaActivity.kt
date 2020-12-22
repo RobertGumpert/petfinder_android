@@ -1,8 +1,11 @@
 package com.example.petfindermap.activities
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -15,6 +18,8 @@ import kotlinx.android.synthetic.main.personal_area.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.FileNotFoundException
+import java.io.InputStream
 import java.net.URL
 
 class PersonalAreaActivity : AppCompatActivity() {
@@ -28,7 +33,9 @@ class PersonalAreaActivity : AppCompatActivity() {
     private lateinit var buttonSignOut: Button
     private lateinit var buttonGetResetToken: Button
     private lateinit var buttonChangePassword: Button
+    private lateinit var buttonChangeAvatar: Button
     private lateinit var imageView: ImageView
+    val FLAG_ON_SELECT_FILE = 1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +53,7 @@ class PersonalAreaActivity : AppCompatActivity() {
         buttonEditUser = findViewById(R.id.buttonEditUserData)
         buttonSignOut = findViewById(R.id.buttonSignOut)
         buttonGetResetToken = findViewById(R.id.buttonGetResetToken)
+        buttonChangeAvatar = findViewById(R.id.buttonChangeAvatar)
         buttonChangePassword = findViewById(R.id.buttonChangePassword)
 
         imageView = findViewById(R.id.imageViewAvatar)
@@ -61,6 +69,14 @@ class PersonalAreaActivity : AppCompatActivity() {
                 imageView.setImageBitmap(bmp)
             }
             downloaderAvatarFile.join()
+        }
+
+        userService.checkAuthorizeAndUpdateToken()
+        { code: Int ->
+            if (code != 200) {
+                val signIn = Intent(this, SignInActivity::class.java)
+                startActivity(signIn)
+            }
         }
     }
 
@@ -127,10 +143,11 @@ class PersonalAreaActivity : AppCompatActivity() {
     }
 
     fun getResetTokenButton(view: View) {
-        userService.getResetPasswordToken  { code: Int ->
+        userService.getResetPasswordToken { code: Int ->
             runOnUiThread {
                 if (code == 200) {
-                    this.textViewGetResetTokenInfo.text = "Вам пришёл код на почту, можете сменить пароль."
+                    this.textViewGetResetTokenInfo.text =
+                        "Вам пришёл код на почту, можете сменить пароль."
                 } else {
                     this.textViewGetResetTokenInfo.text = "Попробуйте еще раз."
                 }
@@ -141,5 +158,53 @@ class PersonalAreaActivity : AppCompatActivity() {
     fun changePasswordButton(view: View) {
         val changePasswordActivity = Intent(this, PasswordResetActivity::class.java)
         startActivity(changePasswordActivity)
+    }
+
+    fun changeAvatarButton(view: View) {
+        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(
+            Intent.createChooser(photoPickerIntent, "Select Picture"),
+            FLAG_ON_SELECT_FILE
+        )
+    }
+
+    private fun getFilePath(uri: Uri?): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = managedQuery(uri, projection, null, null, null)
+        val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor.moveToFirst()
+        return cursor.getString(column_index)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, imageReturnedIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        when (requestCode) {
+            FLAG_ON_SELECT_FILE -> {
+                if (resultCode == RESULT_OK) {
+                    try {
+                        val imageUri: Uri = imageReturnedIntent!!.data as Uri
+                        val inputStream: InputStream =
+                            contentResolver.openInputStream(imageUri) as InputStream
+                        val selectedImageBitmap: Bitmap =
+                            BitmapFactory.decodeStream(inputStream) as Bitmap
+                        imageView.setImageBitmap(selectedImageBitmap)
+                        val filePath: String = getFilePath(imageUri) ?: return
+                        userService.updateAvatar(
+                            filePath = filePath
+                        ) { code: Int ->
+                            if (code != 200) {
+                                runOnUiThread {
+                                    val toMain = Intent(this, MapsActivity::class.java)
+                                    startActivity(toMain)
+                                }
+                            }
+                        }
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 }

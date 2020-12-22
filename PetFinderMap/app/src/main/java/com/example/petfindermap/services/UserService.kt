@@ -10,23 +10,29 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class UserService {
-    var appDatabase : AppDatabase = AppDatabase.getInstance()
-    var httpManager : HttpManager = HttpManager.getInstance()
-    var gson : Gson = Gson()
+    var appDatabase: AppDatabase = AppDatabase.getInstance()
+    var httpManager: HttpManager = HttpManager.getInstance()
+    var gson: Gson = Gson()
 
     var user: UserModel? = null
 
     companion object {
         private var instance: UserService? = null
         fun getInstance(): UserService {
-            if (instance == null){
+            if (instance == null) {
                 instance = UserService()
             }
             return instance!!
         }
     }
 
-    fun signUp(telephone: String, name: String, email: String, password: String, callback: (Int, String)-> Unit) {
+    fun signUp(
+        telephone: String,
+        name: String,
+        email: String,
+        password: String,
+        callback: (Int, String) -> Unit
+    ) {
         if (user != null) {
             callback(1, "Пользователь уже авторизован")
             return
@@ -37,12 +43,17 @@ class UserService {
         }
         val userSignUpData = UserSignUpHttpModel(telephone, name, email, password)
         val postBody = gson.toJson(userSignUpData)
-        httpManager.query("au","/api/user/register", postBody, listOf()) { code: Int, body: String ->
+        httpManager.query(
+            "au",
+            "/api/user/register",
+            postBody,
+            listOf()
+        ) { code: Int, body: String ->
             callback(code, body)
         }
     }
 
-    fun signIn(telephone: String, password: String, callback: (Int, String)-> Unit) {
+    fun signIn(telephone: String, password: String, callback: (Int, String) -> Unit) {
         if (user != null) {
             callback(1, "Пользователь уже авторизован")
             return
@@ -51,23 +62,27 @@ class UserService {
             callback(1, "Заполните все поля")
             return
         }
-        val userSignInData = UserSignInHttpModel(telephone,  password)
+        val userSignInData = UserSignInHttpModel(telephone, password)
         val postBody = gson.toJson(userSignInData)
-        httpManager.query("au","/api/user/authorized", postBody, listOf()) { code: Int, body: String ->
+        httpManager.query(
+            "au",
+            "/api/user/authorized",
+            postBody,
+            listOf()
+        ) { code: Int, body: String ->
             if (code == 200) {
                 val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
                 info.user.access_token = info.token
                 createOrUpdateUserData(info.user) {
                     callback(code, body)
                 }
-            }
-            else {
+            } else {
                 callback(code, body)
             }
         }
     }
 
-    fun signOut(callback: (Int)-> Unit) {
+    fun signOut(callback: (Int) -> Unit) {
         httpManager.query(
             "au",
             "/api/user/access/out",
@@ -82,7 +97,7 @@ class UserService {
             }
             if (code == 401) {
                 val info = gson.fromJson(body, ErrorHttpModel::class.java)
-                if(info.error == "Non valid access token. ") {
+                if (info.error == "Non valid access token. ") {
                     refreshAccessToken() {
                         callback(code)
                     }
@@ -93,7 +108,7 @@ class UserService {
         }
     }
 
-    fun getResetPasswordToken(callback: (Int)-> Unit) {
+    fun getResetPasswordToken(callback: (Int) -> Unit) {
         httpManager.query(
             "au",
             "/api/user/password/token",
@@ -105,7 +120,7 @@ class UserService {
             }
             if (code == 401) {
                 val info = gson.fromJson(body, ErrorHttpModel::class.java)
-                if(info.error == "Non valid access token. ") {
+                if (info.error == "Non valid access token. ") {
                     refreshAccessToken() {
                         callback(code)
                     }
@@ -116,7 +131,7 @@ class UserService {
         }
     }
 
-    fun resetPassword(userResetPasswordModel: UserResetPasswordHttpModel, callback: (Int)-> Unit) {
+    fun resetPassword(userResetPasswordModel: UserResetPasswordHttpModel, callback: (Int) -> Unit) {
         httpManager.query(
             "au",
             "/api/user/password/reset",
@@ -131,7 +146,7 @@ class UserService {
             }
             if (code == 401) {
                 val info = gson.fromJson(body, ErrorHttpModel::class.java)
-                if(info.error == "Non valid access token. ") {
+                if (info.error == "Non valid access token. ") {
                     refreshAccessToken() {
                         callback(code)
                     }
@@ -142,7 +157,7 @@ class UserService {
         }
     }
 
-    fun updateUser(updateUserModel: UserUpdateHttpModel, callback: (Int, String)-> Unit) {
+    fun updateUser(updateUserModel: UserUpdateHttpModel, callback: (Int, String) -> Unit) {
         updateUserModel.user_id = user!!.user_id
         httpManager.query(
             "au",
@@ -158,7 +173,7 @@ class UserService {
             }
             if (code == 401) {
                 val info = gson.fromJson(body, ErrorHttpModel::class.java)
-                if(info.error == "Non valid access token. ") {
+                if (info.error == "Non valid access token. ") {
                     refreshAccessToken() {
                         callback(code, body)
                     }
@@ -169,7 +184,7 @@ class UserService {
         }
     }
 
-    fun createOrUpdateUserData(info: UserModel, callback: ()-> Unit) {
+    fun createOrUpdateUserData(info: UserModel, callback: () -> Unit) {
         user = UserModel(
             user_id = info.user_id,
             telephone = info.telephone,
@@ -198,8 +213,7 @@ class UserService {
                             accessToken = info.access_token
                         )
                     )
-                }
-                else {
+                } else {
                     appDatabase.userDao().update(
                         User(
                             userId = info.user_id,
@@ -217,7 +231,51 @@ class UserService {
         }
     }
 
-    fun userDataLoad(callback: ()-> Unit) {
+    fun checkAuthorizeAndUpdateToken(callback: (Int) -> Unit) {
+        httpManager.query(
+            "au",
+            "/api/user/access",
+            null,
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
+            if (code == 200) {
+                val info = gson.fromJson(body, UserModel::class.java)
+                info.access_token = user!!.access_token
+                createOrUpdateUserData(info) {
+                    callback(code)
+                }
+            } else {
+                val info = gson.fromJson(body, ErrorHttpModel::class.java)
+                if (info.error == "Non valid access token. ") {
+                    refreshAccessToken()
+                    {
+                        if (user != null) {
+                            callback(200)
+                        } else {
+                            callback(code)
+                        }
+                    }
+                } else {
+                    user = null
+                    callback(code)
+                }
+            }
+        }
+    }
+
+    fun updateAvatar(filePath: String, callback: (Int)-> Unit) {
+        httpManager.queryFormData(
+            "au",
+            "/api/user/update/avatar",
+            "",
+            filePath,
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token)))
+        { code: Int, body: String ->
+            callback(code)
+        }
+    }
+
+    fun userDataLoad(callback: () -> Unit) {
         runBlocking {
             val writer = GlobalScope.launch {
                 val users = appDatabase.userDao().getAll()
@@ -242,22 +300,19 @@ class UserService {
                             createOrUpdateUserData(info) {
                                 callback()
                             }
-                        }
-                        else {
+                        } else {
                             val info = gson.fromJson(body, ErrorHttpModel::class.java)
-                            if(info.error == "Non valid access token. ") {
+                            if (info.error == "Non valid access token. ") {
                                 refreshAccessToken() {
                                     callback()
                                 }
-                            }
-                            else {
+                            } else {
                                 user = null
                                 callback()
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     callback()
                 }
             }
@@ -265,23 +320,27 @@ class UserService {
         }
     }
 
-    fun refreshAccessToken(callback: ()-> Unit) {
-        httpManager.query("au","/api/user/access/update", null, listOf(Pair("Authorization", "Bearer " + user!!.access_token))) { code: Int, body: String ->
+    fun refreshAccessToken(callback: () -> Unit) {
+        httpManager.query(
+            "au",
+            "/api/user/access/update",
+            null,
+            listOf(Pair("Authorization", "Bearer " + user!!.access_token))
+        ) { code: Int, body: String ->
             if (code == 200) {
                 val info = gson.fromJson(body, UserSignInAnsHttpModel::class.java)
                 info.user.access_token = info.token
                 createOrUpdateUserData(info.user) {
                     callback()
                 }
-            }
-            else{
+            } else {
                 user = null
                 callback()
             }
         }
     }
 
-    private fun deleteUser(callback: ()-> Unit) {
+    private fun deleteUser(callback: () -> Unit) {
         runBlocking {
             val truncateUserTable = GlobalScope.launch {
                 val users = appDatabase.userDao().getAll()
